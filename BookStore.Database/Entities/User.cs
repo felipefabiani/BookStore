@@ -4,7 +4,7 @@ public class User : Entity
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public DateTimeOffset DateOfBirday { get; set; } = DateTimeOffset.MinValue;
+    public DateTimeOffset DateOfBirth { get; set; } = DateTimeOffset.MinValue;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public List<Role> Roles { get; set; } = new();
@@ -34,7 +34,7 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(50);
 
         builder
-            .Property(x => x.DateOfBirday)
+            .Property(x => x.DateOfBirth)
             .IsRequired();
 
         builder

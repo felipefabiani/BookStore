@@ -1,7 +1,7 @@
 ﻿using static BCrypt.Net.BCrypt;
 namespace BookStore.Database.Infrastructure;
 
-public static class SeedArticleDatabaseExtension
+public static class SeedBookStoreDatabaseExtension
 {
     private static string GetPassword(string pwd = "123456") =>
         EnhancedHashPassword(pwd, 12);
@@ -26,7 +26,7 @@ public static class SeedArticleDatabaseExtension
                 FirstName = "Full",
                 LastName = "Access",
                 Email = "full.access@article.ie",
-                DateOfBirday = DateTimeOffset.Now.AddYears(-40),
+                DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
                 Roles = roles,
                 Claims = claims,
@@ -36,7 +36,7 @@ public static class SeedArticleDatabaseExtension
                 FirstName = "Admin",
                 LastName = "Test",
                 Email = "admin.test@article.ie",
-                DateOfBirday = DateTimeOffset.Now.AddYears(-40),
+                DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
                 Roles = roles.Where(x => x.Id == 1).ToList(),
                 Claims = claims.Where(x => x.Id <= 4).ToList()
@@ -46,7 +46,7 @@ public static class SeedArticleDatabaseExtension
                 FirstName = "Author",
                 LastName = "Test",
                 Email = "author.test@article.ie",
-                DateOfBirday = DateTimeOffset.Now.AddYears(-40),
+                DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
                 Roles = roles.Where(x => x.Id == 2).ToList(),
                 Claims = claims.Where(x => x.Id >= 5 && x.Id < 9).ToList()
@@ -56,7 +56,7 @@ public static class SeedArticleDatabaseExtension
                 FirstName = "User",
                 LastName = "Test",
                 Email = "user.test@article.ie",
-                DateOfBirday = DateTimeOffset.Now.AddYears(-40),
+                DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
                 Roles = roles.Where(x => x.Id == 3).ToList(),
                 Claims = claims.Where(x => x.Id >= 9 && x.Id <= 9).ToList()

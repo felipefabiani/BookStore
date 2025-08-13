@@ -1,6 +1,6 @@
 ﻿namespace BookStore.Database.Entities;
 
-public class Article : Entity
+public class BookStores : Entity
 {
     public string FullName { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
@@ -10,9 +10,9 @@ public class Article : Entity
     public string? RejectionReason { get; set; }
     public List<Comment> Comments { get; set; } = new();
 }
-public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
+public class BookStoreEntityTypeConfiguration : IEntityTypeConfiguration<BookStores>
 {
-    public void Configure(EntityTypeBuilder<Article> builder)
+    public void Configure(EntityTypeBuilder<BookStores> builder)
     {
         builder.HasIndex(x => new
         {

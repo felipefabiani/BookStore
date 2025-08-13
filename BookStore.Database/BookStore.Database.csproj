@@ -20,4 +20,13 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BookStore.Helpers\BookStore.Helpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Seeding\" />
+  </ItemGroup>
+
 </Project>

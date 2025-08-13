@@ -10,12 +10,43 @@ public static class SetUpDatabaseExtension
     {
         var connectionString = Environment.GetEnvironmentVariable(BookStoreConstants.ConnectionString);
 
-        AddDbContextFactoryBookStoreContext();
-        AddDbContextFactoryBookStoreReadOnlyContext();
-        AddDbContextBookStoreReadOnlyContext();
         AddDbContextBookStoreContext();
+        AddDbContextBookStoreReadOnlyContext();
+        AddDbContextFactoryBookStoreContext();
+        AddDbContextFactoryBookStoreReadOnlyContext();       
         return services;
 
+        void AddDbContextBookStoreContext()
+        {
+            services.AddDbContext<BookStoreContext>(options =>
+            {
+                options
+#if DEBUG
+                    .EnableSensitiveDataLogging()
+#endif
+                    .UseSqlServer(connectionString, x =>
+                    {
+                        x.MigrationsAssembly(typeof(BookStoreContext).Assembly.FullName);
+                        x.EnableRetryOnFailure(2);
+                    });
+
+            });
+        }
+        void AddDbContextBookStoreReadOnlyContext()
+        {
+            services.AddDbContext<BookStoreReadOnlyContext>(options =>
+            {
+                options
+#if DEBUG
+                    .EnableSensitiveDataLogging()
+#endif
+                    .UseSqlServer(connectionString, x =>
+                    {
+                        x.MigrationsAssembly(typeof(BookStoreContext).Assembly.FullName);
+                        x.EnableRetryOnFailure(2);
+                    });
+            });
+        }
         void AddDbContextFactoryBookStoreContext()
         {
             services.AddDbContextFactory<BookStoreContext>(options =>
@@ -36,37 +67,6 @@ public static class SetUpDatabaseExtension
                     .EnableSensitiveDataLogging()
         #endif
                     .UseSqlServer(connectionString);
-            });
-        }
-        void AddDbContextBookStoreReadOnlyContext()
-        {
-            services.AddDbContext<BookStoreReadOnlyContext>(options =>
-            {
-                options
-#if DEBUG
-                    .EnableSensitiveDataLogging()
-#endif
-                    .UseSqlServer(connectionString, x =>
-                    {
-                        x.MigrationsAssembly(typeof(BookStoreContext).Assembly.FullName);
-                        x.EnableRetryOnFailure(2);
-                    });
-            });
-        }
-        void AddDbContextBookStoreContext()
-        { 
-            services.AddDbContext<BookStoreContext>(options =>
-            {
-                options
-#if DEBUG
-                    .EnableSensitiveDataLogging()
-#endif
-                    .UseSqlServer(connectionString, x =>
-                    {
-                        x.MigrationsAssembly(typeof(BookStoreContext).Assembly.FullName);
-                        x.EnableRetryOnFailure(2);
-                    });
-
             });
         }
     }

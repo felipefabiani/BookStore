@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
+﻿using BookStore.Helper;
+using Microsoft.EntityFrameworkCore.Design;
 using System.Reflection;
-
 namespace BookStore.Database.Context;
 
 public abstract class BookStoreAbstractContext : DbContext
@@ -10,8 +10,8 @@ public abstract class BookStoreAbstractContext : DbContext
     {
     }
 
-    // public DbSet<ArticleTest> ArticleTests { get; set; } = null!;
-    public virtual DbSet<Article> Articles { get; set; } = null!;
+    // public DbSet<BookStoreTest> BookStoreTests { get; set; } = null!;
+    public virtual DbSet<BookStores> BookStore { get; set; } = null!;
     public virtual DbSet<User> Users { get; set; } = null!;
     public virtual DbSet<Role> Roles { get; set; } = null!;
     public virtual DbSet<Claim> Claims { get; set; } = null!;
@@ -28,9 +28,7 @@ public class BookStoreContextFactory : IDesignTimeDbContextFactory<BookStoreCont
     public BookStoreContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<BookStoreContext>();
-
-        // Use a hardcoded or environment-based connection string for design-time
-        var connectionString = "Server=localhost;Database=BookStoreDb;User Id=sa;Password=qwe@@123;TrustServerCertificate=True;";
+        var connectionString = Environment.GetEnvironmentVariable(BookStoreConstants.ConnectionString);
 
         optionsBuilder.UseSqlServer(connectionString, x =>
         {

@@ -27,3 +27,4 @@ Connection string set up on Environment Variables, to change go to:
 How do run migrations for this project
 dotnet ef database update --project BookStore.Database --startup-project BooskStore.Api --context BookStoreContext
 
+dotnet ef migrations add Initial --project BookStore.Database --startup-project BooskStore.Api --context BookStoreContext

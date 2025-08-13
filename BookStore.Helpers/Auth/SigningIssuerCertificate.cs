@@ -28,7 +28,7 @@ namespace BookStore.Helper.Auth
         private void ImportPemFromFile(string pem)
         {
             var path = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
                 pem);
 
             using var stream = File.OpenRead(path);
