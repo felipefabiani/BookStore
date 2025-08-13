@@ -1,5 +1,4 @@
-
-
+using BookStore.Database.Infrastructure;
 using BookStore.Api.Model;
 
 public partial class Program
@@ -9,11 +8,11 @@ public partial class Program
         var builder = WebApplication.CreateBuilder();
 
         builder.AddServiceDefaults();
+        builder.Services.AddDatabase();
 
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
-
         var app = builder.Build();
 
         app.MapDefaultEndpoints();

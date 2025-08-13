@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.EntityFrameworkCore.Design;
+using System.Reflection;
 
 namespace BookStore.Database.Context;
 
@@ -22,6 +23,25 @@ public abstract class BookStoreAbstractContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
+public class BookStoreContextFactory : IDesignTimeDbContextFactory<BookStoreContext>
+{
+    public BookStoreContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<BookStoreContext>();
+
+        // Use a hardcoded or environment-based connection string for design-time
+        var connectionString = "Server=localhost;Database=BookStoreDb;User Id=sa;Password=qwe@@123;TrustServerCertificate=True;";
+
+        optionsBuilder.UseSqlServer(connectionString, x =>
+        {
+            x.MigrationsAssembly(typeof(BookStoreContext).Assembly.FullName);
+            x.EnableRetryOnFailure(2);
+        });
+
+        return new BookStoreContext(optionsBuilder.Options);
+    }
+}
+
 public class BookStoreContext : BookStoreAbstractContext
 {
     public BookStoreContext(DbContextOptions<BookStoreContext> options)
@@ -30,9 +50,9 @@ public class BookStoreContext : BookStoreAbstractContext
     }
 }
 
-public class ArticleReadOnlyContext : BookStoreAbstractContext
+public class BookStoreReadOnlyContext : BookStoreAbstractContext
 {
-    public ArticleReadOnlyContext(DbContextOptions<ArticleReadOnlyContext> options)
+    public BookStoreReadOnlyContext(DbContextOptions<BookStoreReadOnlyContext> options)
         : base(options)
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

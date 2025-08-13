@@ -16,6 +16,14 @@ Austhentication: SQL SErver Authentication
 Login: sa
 Password: qwe@@123
 
+Connection string set up on Environment Variables, to change go to:
+    Right-click your project in Solution Explorer
+    Select Properties
+    Go to the Debug tab
+    Find the section labeled Environment Variables
+    Name: BOOKSTORE_DB_CONNECTION
+    Value: Server=localhost;Database=BookStoreDb;User Id=sa;Password=qwe@@123;TrustServerCertificate=True;
 
-
+How do run migrations for this project
+dotnet ef database update --project BookStore.Database --startup-project BooskStore.Api --context BookStoreContext
 

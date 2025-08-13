@@ -1,23 +1,22 @@
-﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
+{
   "profiles": {
     "http": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5139",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5139"
     },
     "https": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:7206;http://localhost:5139",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BOOKTORE_CONNECTIONSTRINGS": "Data Source=127.0.0.1,1433;Initial Catalog=BookStore;User ID=sa;pwd=qwe@@123;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7206;http://localhost:5139"
     }
-  }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }
