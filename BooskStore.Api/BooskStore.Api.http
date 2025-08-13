@@ -1,0 +1,6 @@
+@BooskStore.Api_HostAddress = http://localhost:5139
+
+GET {{BooskStore.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

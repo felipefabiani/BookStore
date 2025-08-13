@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookStoreApp\BookStoreApp\BookStoreApp.csproj" />
+    <ProjectReference Include="..\BooskStore.Api\BooskStore.Api.csproj" />
   </ItemGroup>
 
 </Project>

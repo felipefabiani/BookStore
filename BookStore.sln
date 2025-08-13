@@ -11,6 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStore.AppHost", "BookSt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStore.ServiceDefaults", "BookStore.ServiceDefaults\BookStore.ServiceDefaults.csproj", "{ACE532B0-5E77-617B-88A9-DEB405E8CCF2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apis", "Apis", "{46894FB4-AD5E-4054-9028-BA95A8E0BCD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooskStore.Api", "BooskStore.Api\BooskStore.Api.csproj", "{986FBCD4-F57A-8CCD-B426-128BED2BE411}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooskStore.Api.UnitTest", "BooskStore.Api.UnitTest\BooskStore.Api.UnitTest.csproj", "{1C2593BA-AD94-487D-81AF-95AE2DD30FDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +41,24 @@ Global
 		{ACE532B0-5E77-617B-88A9-DEB405E8CCF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE532B0-5E77-617B-88A9-DEB405E8CCF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE532B0-5E77-617B-88A9-DEB405E8CCF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{986FBCD4-F57A-8CCD-B426-128BED2BE411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{986FBCD4-F57A-8CCD-B426-128BED2BE411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{986FBCD4-F57A-8CCD-B426-128BED2BE411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{986FBCD4-F57A-8CCD-B426-128BED2BE411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C2593BA-AD94-487D-81AF-95AE2DD30FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C2593BA-AD94-487D-81AF-95AE2DD30FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C2593BA-AD94-487D-81AF-95AE2DD30FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C2593BA-AD94-487D-81AF-95AE2DD30FDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C798C4F3-E9B7-0799-E131-3BF2156993B4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6F47DAF0-3138-11D8-9986-8BDC440244B8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{ACE532B0-5E77-617B-88A9-DEB405E8CCF2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{986FBCD4-F57A-8CCD-B426-128BED2BE411} = {46894FB4-AD5E-4054-9028-BA95A8E0BCD1}
+		{1C2593BA-AD94-487D-81AF-95AE2DD30FDB} = {46894FB4-AD5E-4054-9028-BA95A8E0BCD1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A5F1242-91F1-4E9E-97A3-D4A4C815979C}
