@@ -4,7 +4,7 @@
     {
         public string Name { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
-        public List<User> Users { get; set; } = null!;
+        public List<UserClaim> UserClaims { get; set; } = [];
     }
 
     public class ClaimEntityTypeConfiguration : IEntityTypeConfiguration<Claim>

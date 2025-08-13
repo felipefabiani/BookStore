@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BooskStore.Api\BooskStore.Api.csproj" />
+    <ProjectReference Include="..\BookStore.Api\BookStore.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

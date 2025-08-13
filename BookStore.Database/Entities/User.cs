@@ -7,8 +7,9 @@ public class User : Entity
     public DateTimeOffset DateOfBirth { get; set; } = DateTimeOffset.MinValue;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-    public List<Role> Roles { get; set; } = new();
-    public List<Claim> Claims { get; set; } = new();
+    public List<UserRole> UserRoles { get; set; } = [];
+    public List<UserClaim> UserClaims { get; set; } = [];
+
 }
 
 public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
@@ -54,11 +55,13 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(60);
 
         builder
-            .HasMany(x => x.Roles)
-            .WithMany(x => x.Users);
+            .HasMany(x => x.UserRoles)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId);
 
         builder
-            .HasMany(x => x.Claims)
-            .WithMany(x => x.Users);
+            .HasMany(x => x.UserClaims)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId);
     }
 }
