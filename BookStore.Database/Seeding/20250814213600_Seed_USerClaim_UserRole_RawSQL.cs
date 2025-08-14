@@ -39,7 +39,6 @@ public class _20250814113200_Seed_USerClaim_UserRole : ISeeder
                     User = u,
                     Role = r
                 })
-
             )]);
 
         await context.UserRoles.AddRangeAsync([.. dbUsers
@@ -77,6 +76,7 @@ public class _20250814113200_Seed_USerClaim_UserRole : ISeeder
                     Role = r 
                 }))]);
 
+        //await context.UserRoles.AddRangeAsync(dbUserRoles);
     }
 
 

@@ -21,30 +21,21 @@ public class _20250814093600_Seed_Users : ISeeder
 
         await SeedUsers(context);
 
-        if (context.ChangeTracker.HasChanges())
-        {
-            await context.SaveChangesAsync();
-        }
+        //if (context.ChangeTracker.HasChanges())
+        //{
+        //    await context.SaveChangesAsync();
+        //}
     }
 
     private async Task SeedUsers(BookStoreContext context)
     {
-        if (await context.Users.AnyAsync())
-        {
-            return; // Users already seeded
-        }
-        var roles = await context.Roles.ToListAsync();
-        var claims = await context.Claims.ToListAsync();
-        var users = new List<User>
-        {
+        var inputUsers = new List<User> {
             new() {
                 FirstName = "Full",
                 LastName = "Access",
                 Email = "full.access@article.ie",
                 DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
-                Roles = roles,
-                Claims = claims
             },
             new() {
                 FirstName = "Admin",
@@ -52,8 +43,6 @@ public class _20250814093600_Seed_Users : ISeeder
                 Email = "admin.test@article.ie",
                 DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
-                Roles = roles.Where(x => x.Id == 1 || x.Id == 3).ToList(),
-                Claims = claims.Where(x => x.Id <= 4).ToList()
             },
             new() {
                 FirstName = "Author",
@@ -61,10 +50,6 @@ public class _20250814093600_Seed_Users : ISeeder
                 Email = "author.test@article.ie",
                 DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
-                Roles = roles.Where(x => x.Id == 2 || x.Id == 3).ToList(),
-                Claims = claims.Where(x => x.Id >= 5 && x.Id < 9).ToList()
-                //UserRoles = [.. roles.Where(x => x.Id == 2 || x.Id == 3).Select(role => new UserRole { RoleId = role.Id })],
-                //UserClaims = [.. claims.Where(x => x.Id >= 5 && x.Id < 9).Select(claim => new UserClaim { ClaimId = claim.Id })]
             },
             new() {
                 FirstName = "User",
@@ -72,12 +57,17 @@ public class _20250814093600_Seed_Users : ISeeder
                 Email = "user.test@article.ie",
                 DateOfBirth = DateTimeOffset.Now.AddYears(-40),
                 Password = GetPassword(),
-                Roles = roles.Where(x => x.Id == 3).ToList(),
-                Claims = claims.Where(x => x.Id >= 9 && x.Id <= 9).ToList()
-                //UserRoles = [.. roles.Where(x => x.Id == 3).Select(role => new UserRole { RoleId = role.Id })],
-                //UserClaims = [.. claims.Where(x => x.Id >= 9 && x.Id <= 9).Select(claim => new UserClaim { ClaimId = claim.Id })]
             }
         };
-        await context.Users.AddRangeAsync(users);
+
+        // Only add the missing users
+        var missingUsers = inputUsers
+            .Where(input => !context.Users.Any(dbUser =>
+                dbUser.FirstName == input.FirstName &&
+                dbUser.LastName == input.LastName &&
+                dbUser.Email == input.Email))
+            .ToList();
+
+        await context.Users.AddRangeAsync(missingUsers);
     }
 }

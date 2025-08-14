@@ -17,8 +17,10 @@ public abstract class BookStoreAbstractContext : DbContext
     public virtual DbSet<User> Users { get; set; } = null!;
     public virtual DbSet<Role> Roles { get; set; } = null!;
     public virtual DbSet<Claim> Claims { get; set; } = null!;
-    //public virtual DbSet<UserClaim> UserClaims { get; set; } = null!;
-    //public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
+    // public virtual DbSet<UserClaim> UserClaims { get; set; } = null!;
+    public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
+    public virtual DbSet<SeedEntity> SeedHistory { get; set; } = null!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

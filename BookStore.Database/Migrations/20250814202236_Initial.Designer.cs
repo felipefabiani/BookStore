@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStore.Database.Migrations
 {
     [DbContext(typeof(BookStoreContext))]
-    [Migration("20250814131437_Initiaqwqwqwl")]
-    partial class Initiaqwqwqwl
+    [Migration("20250814202236_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -222,6 +222,31 @@ namespace BookStore.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BookStore.Database.Entities.SeedEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreateOn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("__SeedHistory", (string)null);
+                });
+
             modelBuilder.Entity("BookStore.Database.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +293,28 @@ namespace BookStore.Database.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Test")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId", "RoleId")
+                        .IsUnique();
+
+                    b.ToTable("UserRoles");
+                });
+
             modelBuilder.Entity("ClaimUser", b =>
                 {
                     b.Property<int>("ClaimsId")
@@ -283,26 +330,30 @@ namespace BookStore.Database.Migrations
                     b.ToTable("ClaimUser");
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.Property<int>("RolesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RolesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("UserRoles", (string)null);
-                });
-
             modelBuilder.Entity("BookStore.Database.Entities.Comment", b =>
                 {
                     b.HasOne("BookStore.Database.Entities.BookStores", null)
                         .WithMany("Comments")
                         .HasForeignKey("BookStoresId");
+                });
+
+            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+                {
+                    b.HasOne("BookStore.Database.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookStore.Database.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClaimUser", b =>
@@ -320,24 +371,19 @@ namespace BookStore.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.HasOne("BookStore.Database.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookStore.Database.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BookStore.Database.Entities.BookStores", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("BookStore.Database.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("BookStore.Database.Entities.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
