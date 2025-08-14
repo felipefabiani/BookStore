@@ -61,14 +61,10 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId);
 
-        //builder
-        //    .HasMany(x => x.UserClaims)
-        //    .WithOne(x => x.User)
-        //    .HasForeignKey(x => x.UserId);
-
-        //builder
-        //    .HasMany(u => u.Roles)
-        //    .WithMany(r => r.Users)
-        //    .UsingEntity(j => j.ToTable("UserRoles"));
+        // Setting up implicit many-to-many relationships
+        builder
+            .HasMany(u => u.Claims)
+            .WithMany(r => r.Users)
+            .UsingEntity(j => j.ToTable("UsersClaims"));
     }
 }

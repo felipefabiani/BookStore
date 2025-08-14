@@ -3,7 +3,12 @@
 public interface ISeeder
 {
     Task SeedAsync(BookStoreContext context, SeedEnvironmentEnum env);
-    static bool HasToSeedEnvironment(SeedEnvironmentEnum seedEnvs, SeedEnvironmentEnum seedEnvironment) => seedEnvironment == (seedEnvs | seedEnvironment);
+    static bool HasToSeedEnvironment(SeedEnvironmentEnum seedEnvs, SeedEnvironmentEnum seedEnvironment) => seedEnvironment == (seedEnvs & seedEnvironment);
+}
+
+public interface ISeederEnv : ISeeder
+{
+    SeedEnvironmentEnum SeedEnvironments { get; }
 }
 
 [Flags]
@@ -13,6 +18,7 @@ public enum SeedEnvironmentEnum
     UAT1 = 2,
     UAT2 = 4,
     UAT3 = 8,
-    PreProd = 16,
-    Prod =2024
+    PreProd = 2048,
+    Prod = 4096,
+    All = Dev | UAT1 | UAT2 | UAT3 | PreProd | Prod
 }

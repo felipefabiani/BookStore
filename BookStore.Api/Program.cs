@@ -2,6 +2,7 @@ using BookStore.Api.Model;
 using BookStore.Database.Context;
 using BookStore.Database.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+
 public partial class Program
 {
     public static async Task Main()
@@ -22,10 +23,10 @@ public partial class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            
-            //var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
-            //using var context = factory.CreateDbContext();
-            //await context.Seed(SeedEnvironmentEnum.Dev);
+
+            var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
+            using var context = factory.CreateDbContext();
+            await context.Seed(SeedEnvironmentEnum.Dev);
         }
 
         app.UseHttpsRedirection();
@@ -37,11 +38,6 @@ public partial class Program
 
         app.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory) =>
         {
-
-            var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
-            using var context = factory.CreateDbContext();
-            await context.Seed(SeedEnvironmentEnum.Dev);
-
             var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
                 (

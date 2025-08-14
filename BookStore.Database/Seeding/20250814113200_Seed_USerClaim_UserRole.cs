@@ -8,8 +8,8 @@ public class _20250814113200_Seed_USerClaim_UserRole : ISeeder
     public async Task SeedAsync(BookStoreContext context, SeedEnvironmentEnum seedEnvironment)
     {
         var seedEnvs =
-            SeedEnvironmentEnum.Dev &
-            SeedEnvironmentEnum.UAT1 &
+            SeedEnvironmentEnum.Dev |
+            SeedEnvironmentEnum.UAT1 |
             SeedEnvironmentEnum.PreProd;
 
         if (!ISeeder.HasToSeedEnvironment(seedEnvs, seedEnvironment))
