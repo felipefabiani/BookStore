@@ -4,8 +4,7 @@ namespace BookStore.Database.Seeding;
 
 public class _20250814093600_Seed_Users : ISeeder
 {
-    private string GetPassword(string pwd = "123456") =>
-        EnhancedHashPassword(pwd, 12);
+    private static string GetPassword(string pwd = "123456") => EnhancedHashPassword(pwd, 12);
 
     public async Task SeedAsync(BookStoreContext context, SeedEnvironmentEnum seedEnvironment)
     {
@@ -20,14 +19,9 @@ public class _20250814093600_Seed_Users : ISeeder
         }
 
         await SeedUsers(context);
-
-        //if (context.ChangeTracker.HasChanges())
-        //{
-        //    await context.SaveChangesAsync();
-        //}
     }
 
-    private async Task SeedUsers(BookStoreContext context)
+    private static async Task SeedUsers(BookStoreContext context)
     {
         var inputUsers = new List<User> {
             new() {

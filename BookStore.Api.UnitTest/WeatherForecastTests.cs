@@ -4,6 +4,7 @@ using Xunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using BookStore.Api.Model;
+using BookStore.Api;
 
 public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>>
 {

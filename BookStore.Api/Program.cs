@@ -1,7 +1,10 @@
+using BookStore.Api.Infrastructure;
 using BookStore.Api.Model;
 using BookStore.Database.Context;
 using BookStore.Database.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+
+namespace BookStore.Api;
 
 public partial class Program
 {
@@ -33,10 +36,10 @@ public partial class Program
 
         var summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
 
-        app.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory) =>
+        app.MapGet("/weatherforecast", (IDbContextFactory<BookStoreContext> contextFactory) =>
         {
             var forecast = Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast

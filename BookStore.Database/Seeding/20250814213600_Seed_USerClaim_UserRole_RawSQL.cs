@@ -11,7 +11,7 @@ public class _20250814213600_Seed_USerClaim_UserRole_RawSQL : ISeederEnv
 
     public async Task SeedAsync(BookStoreContext context, SeedEnvironmentEnum seedEnvironment)
     {
-        if (!ISeeder.HasToSeedEnvironment(SeedEnvironments, seedEnvironment))
+        if (!SeedEnvironments.HasFlag(seedEnvironment))
         {
             return;
         }
@@ -19,7 +19,7 @@ public class _20250814213600_Seed_USerClaim_UserRole_RawSQL : ISeederEnv
         await SeedUserClaim(context);
     }
 
-    private async Task SeedUserClaim(BookStoreContext context)
+    private static async Task SeedUserClaim(BookStoreContext context)
     {
         await context.Database.ExecuteSqlRawAsync(
             """

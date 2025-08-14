@@ -5,13 +5,8 @@ using System.Reflection;
 
 namespace BookStore.Database.Context;
 
-public abstract class BookStoreAbstractContext : DbContext
+public abstract class BookStoreAbstractContext(DbContextOptions contextOptions) : DbContext(contextOptions)
 {
-    protected BookStoreAbstractContext(DbContextOptions contextOptions)
-        : base(contextOptions)
-    {
-    }
-
     // public DbSet<BookStoreTest> BookStoreTests { get; set; } = null!;
     public virtual DbSet<BookStores> BookStore { get; set; } = null!;
     public virtual DbSet<User> Users { get; set; } = null!;
@@ -44,12 +39,8 @@ public class BookStoreContextFactory : IDesignTimeDbContextFactory<BookStoreCont
     }
 }
 
-public class BookStoreContext : BookStoreAbstractContext
+public class BookStoreContext(DbContextOptions<BookStoreContext> options) : BookStoreAbstractContext(options)
 {
-    public BookStoreContext(DbContextOptions<BookStoreContext> options)
-        : base(options)
-    {
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookStoreContext).Assembly);

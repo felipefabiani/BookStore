@@ -3,6 +3,8 @@
 public interface ISeeder
 {
     Task SeedAsync(BookStoreContext context, SeedEnvironmentEnum env);
+
+    [Obsolete("Use SeedEnvironments.HasFlag(seedEnvironment) instead.")]
     static bool HasToSeedEnvironment(SeedEnvironmentEnum seedEnvs, SeedEnvironmentEnum seedEnvironment) => seedEnvironment == (seedEnvs & seedEnvironment);
 }
 
