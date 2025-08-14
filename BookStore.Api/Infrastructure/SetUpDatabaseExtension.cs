@@ -10,8 +10,8 @@ public static class SetUpDatabaseExtension
     {
         var connectionString = Environment.GetEnvironmentVariable(BookStoreConstants.ConnectionString);
 
-        AddDbContextBookStoreContext();
-        AddDbContextBookStoreReadOnlyContext();
+        // AddDbContextBookStoreContext();
+        // AddDbContextBookStoreReadOnlyContext();
         AddDbContextFactoryBookStoreContext();
         AddDbContextFactoryBookStoreReadOnlyContext();       
         return services;

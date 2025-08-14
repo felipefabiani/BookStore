@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace BookStore.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initiaqwqwqwl : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -95,24 +97,24 @@ namespace BookStore.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserClaims",
+                name: "ClaimUser",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ClaimId = table.Column<int>(type: "int", nullable: false)
+                    ClaimsId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserClaims", x => new { x.UserId, x.ClaimId });
+                    table.PrimaryKey("PK_ClaimUser", x => new { x.ClaimsId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_UserClaims_Claims_ClaimId",
-                        column: x => x.ClaimId,
+                        name: "FK_ClaimUser_Claims_ClaimsId",
+                        column: x => x.ClaimsId,
                         principalTable: "Claims",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserClaims_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_ClaimUser_Users_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -122,24 +124,50 @@ namespace BookStore.Database.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RolesId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserRoles", x => new { x.RolesId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
+                        name: "FK_UserRoles_Roles_RolesId",
+                        column: x => x.RolesId,
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserRoles_Users_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Claims",
+                columns: new[] { "Id", "Name", "Value" },
+                values: new object[,]
+                {
+                    { 1, "BookStore_Moderate", "100" },
+                    { 2, "BookStore_Delete", "101" },
+                    { 3, "BookStore_Get_Pending_List", "102" },
+                    { 4, "BookStore_Update", "103" },
+                    { 5, "Author_Update_Profile", "104" },
+                    { 6, "Author_Get_Own_List", "200" },
+                    { 7, "Author_Save_Own", "201" },
+                    { 8, "Author_Update_Own_Profile", "202" },
+                    { 9, "user_reads", "301" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "Author" },
+                    { 3, "User" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -155,6 +183,11 @@ namespace BookStore.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClaimUser_UsersId",
+                table: "ClaimUser",
+                column: "UsersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comment_BookStoresId",
                 table: "Comment",
                 column: "BookStoresId");
@@ -166,26 +199,9 @@ namespace BookStore.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserClaims_ClaimId",
-                table: "UserClaims",
-                column: "ClaimId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaims_UserId_ClaimId",
-                table: "UserClaims",
-                columns: new[] { "UserId", "ClaimId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
+                name: "IX_UserRoles_UsersId",
                 table: "UserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserId_RoleId",
-                table: "UserRoles",
-                columns: new[] { "UserId", "RoleId" },
-                unique: true);
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -204,19 +220,19 @@ namespace BookStore.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Comment");
+                name: "ClaimUser");
 
             migrationBuilder.DropTable(
-                name: "UserClaims");
+                name: "Comment");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "BookStore");
+                name: "Claims");
 
             migrationBuilder.DropTable(
-                name: "Claims");
+                name: "BookStore");
 
             migrationBuilder.DropTable(
                 name: "Roles");

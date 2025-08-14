@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStore.Database.Migrations
 {
     [DbContext(typeof(BookStoreContext))]
-    [Migration("20250813220628_Initial")]
-    partial class Initial
+    [Migration("20250814131437_Initiaqwqwqwl")]
+    partial class Initiaqwqwqwl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,62 @@ namespace BookStore.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Claims");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "BookStore_Moderate",
+                            Value = "100"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "BookStore_Delete",
+                            Value = "101"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "BookStore_Get_Pending_List",
+                            Value = "102"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "BookStore_Update",
+                            Value = "103"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Author_Update_Profile",
+                            Value = "104"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Author_Get_Own_List",
+                            Value = "200"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Author_Save_Own",
+                            Value = "201"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Author_Update_Own_Profile",
+                            Value = "202"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "user_reads",
+                            Value = "301"
+                        });
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.Comment", b =>
@@ -147,6 +203,23 @@ namespace BookStore.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Author"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.User", b =>
@@ -195,40 +268,34 @@ namespace BookStore.Database.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserClaim", b =>
+            modelBuilder.Entity("ClaimUser", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("ClaimsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClaimId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "ClaimId");
+                    b.HasKey("ClaimsId", "UsersId");
 
-                    b.HasIndex("ClaimId");
+                    b.HasIndex("UsersId");
 
-                    b.HasIndex("UserId", "ClaimId")
-                        .IsUnique();
-
-                    b.ToTable("UserClaims");
+                    b.ToTable("ClaimUser");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("RolesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.HasKey("RolesId", "UsersId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("UsersId");
 
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique();
-
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.Comment", b =>
@@ -238,64 +305,39 @@ namespace BookStore.Database.Migrations
                         .HasForeignKey("BookStoresId");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserClaim", b =>
+            modelBuilder.Entity("ClaimUser", b =>
                 {
-                    b.HasOne("BookStore.Database.Entities.Claim", "Claim")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("ClaimId")
+                    b.HasOne("BookStore.Database.Entities.Claim", null)
+                        .WithMany()
+                        .HasForeignKey("ClaimsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStore.Database.Entities.User", "User")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("UserId")
+                    b.HasOne("BookStore.Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Claim");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("BookStore.Database.Entities.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("BookStore.Database.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStore.Database.Entities.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
+                    b.HasOne("BookStore.Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.BookStores", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.Claim", b =>
-                {
-                    b.Navigation("UserClaims");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.User", b =>
-                {
-                    b.Navigation("UserClaims");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

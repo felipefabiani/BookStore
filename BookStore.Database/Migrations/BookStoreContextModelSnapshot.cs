@@ -265,40 +265,34 @@ namespace BookStore.Database.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserClaim", b =>
+            modelBuilder.Entity("ClaimUser", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("ClaimsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClaimId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "ClaimId");
+                    b.HasKey("ClaimsId", "UsersId");
 
-                    b.HasIndex("ClaimId");
+                    b.HasIndex("UsersId");
 
-                    b.HasIndex("UserId", "ClaimId")
-                        .IsUnique();
-
-                    b.ToTable("UserClaims");
+                    b.ToTable("ClaimUser");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("RolesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.HasKey("RolesId", "UsersId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("UsersId");
 
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique();
-
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.Comment", b =>
@@ -308,64 +302,39 @@ namespace BookStore.Database.Migrations
                         .HasForeignKey("BookStoresId");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserClaim", b =>
+            modelBuilder.Entity("ClaimUser", b =>
                 {
-                    b.HasOne("BookStore.Database.Entities.Claim", "Claim")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("ClaimId")
+                    b.HasOne("BookStore.Database.Entities.Claim", null)
+                        .WithMany()
+                        .HasForeignKey("ClaimsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStore.Database.Entities.User", "User")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("UserId")
+                    b.HasOne("BookStore.Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Claim");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("BookStore.Database.Entities.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("BookStore.Database.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookStore.Database.Entities.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
+                    b.HasOne("BookStore.Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.BookStores", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.Claim", b =>
-                {
-                    b.Navigation("UserClaims");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("BookStore.Database.Entities.User", b =>
-                {
-                    b.Navigation("UserClaims");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

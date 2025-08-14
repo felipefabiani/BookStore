@@ -1,4 +1,6 @@
-﻿namespace BookStore.Database.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BookStore.Database.Entities;
 
 public class User : Entity
 {
@@ -7,8 +9,8 @@ public class User : Entity
     public DateTimeOffset DateOfBirth { get; set; } = DateTimeOffset.MinValue;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-    public List<UserRole> UserRoles { get; set; } = [];
-    public List<UserClaim> UserClaims { get; set; } = [];
+    public List<Role> Roles { get; set; } = [];
+    public List<Claim> Claims { get; set; } = [];
 
 }
 
@@ -54,14 +56,19 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(60);
 
-        builder
-            .HasMany(x => x.UserRoles)
-            .WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId);
+        //builder
+        //    .HasMany(x => x.UserRoles)
+        //    .WithOne(x => x.User)
+        //    .HasForeignKey(x => x.UserId);
+
+        //builder
+        //    .HasMany(x => x.UserClaims)
+        //    .WithOne(x => x.User)
+        //    .HasForeignKey(x => x.UserId);
 
         builder
-            .HasMany(x => x.UserClaims)
-            .WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId);
+            .HasMany(u => u.Roles)
+            .WithMany(r => r.Users)
+            .UsingEntity(j => j.ToTable("UserRoles"));
     }
 }
