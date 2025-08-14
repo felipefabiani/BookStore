@@ -27,6 +27,6 @@ Connection string set up on Environment Variables, to change go to:
 How do run migrations for this project
 dotnet ef database update --project BookStore.Database --startup-project BookStore.Api --context BookStoreContext
 
-dotnet ef migrations add Initial --project BookStore.Database --namespace BookStore.Database.Migrations --startup-project BooskStore.Api --context BookStoreContext
+dotnet ef migrations add Initial --project BookStore.Database --namespace BookStore.Database.Migrations --startup-project BookStore.Api --context BookStoreContext
 
 dotnet ef database update --project BookStore.Database --startup-project BookStore.Api --context BookStoreContext --connection "Data Source=127.0.0.1,1433;Initial Catalog=BookStore;User ID=sa;pwd=qwe@@123;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"

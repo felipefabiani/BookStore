@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStore.Database.Migrations
 {
     [DbContext(typeof(BookStoreContext))]
-    [Migration("20250813223133_Seeding_Users_Roles_Claims_UserRoles_UserClaims")]
-    partial class Seeding_Users_Roles_Claims_UserRoles_UserClaims
+    [Migration("20250814083127_SetUp_Roles_Claims")]
+    partial class SetUp_Roles_Claims
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,44 +266,6 @@ namespace BookStore.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DateOfBirth = new DateTimeOffset(new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "full.access@article.ie",
-                            FirstName = "Full",
-                            LastName = "Access",
-                            Password = "hashed-password-1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DateOfBirth = new DateTimeOffset(new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "admin.test@article.ie",
-                            FirstName = "Admin",
-                            LastName = "Test",
-                            Password = "hashed-password-2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DateOfBirth = new DateTimeOffset(new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "author.test@article.ie",
-                            FirstName = "Author",
-                            LastName = "Test",
-                            Password = "hashed-password-3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DateOfBirth = new DateTimeOffset(new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "user.test@article.ie",
-                            FirstName = "User",
-                            LastName = "Test",
-                            Password = "hashed-password-4"
-                        });
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.UserClaim", b =>
@@ -322,98 +284,6 @@ namespace BookStore.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("UserClaims");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 2
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 3
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 4
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 5
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 6
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 7
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 8
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            ClaimId = 9
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            ClaimId = 1
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            ClaimId = 2
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            ClaimId = 3
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            ClaimId = 4
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            ClaimId = 5
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            ClaimId = 6
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            ClaimId = 7
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            ClaimId = 8
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            ClaimId = 9
-                        });
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.UserRole", b =>
@@ -432,38 +302,6 @@ namespace BookStore.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 2
-                        },
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 3
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            RoleId = 2
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            RoleId = 3
-                        });
                 });
 
             modelBuilder.Entity("BookStore.Database.Entities.Comment", b =>
