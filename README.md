@@ -35,3 +35,13 @@ dotnet ef database update --project BookStore.Database --startup-project BookSto
 
 
 dotnet ef migrations add SetUp_Roles_Claims --project BookStore.Database --namespace BookStore.Database.Migrations --startup-project BookStore.Api --context BookStoreContext
+
+
+Serilog Seq (datalust)
+docker pull datalust/seq:latest
+
+docker run --name BookStore.Seq -d --restart unless-stopped -e ACCEPT_EULA=Y -e SEQ_PASSWORD=qwe@@123 -p 5341:80 datalust/seq:latest
+
+open in browser http:\\localhost:5341
+  user: admin
+
