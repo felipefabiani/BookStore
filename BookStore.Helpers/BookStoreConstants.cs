@@ -32,4 +32,16 @@ namespace BookStore.Helper
             public static readonly string Audience = "Article.Audience";
         }
     }
+
+    public partial class BookStoreConstants
+    {
+        public class Services
+        {
+            public static readonly string BookStoreAppName = "BookStore";
+            public static readonly string BookStoreApiName = $"{BookStoreAppName}-Api";
+            public static readonly string BookStoreDatabaseName = $"{BookStoreAppName}-Database";
+            public static readonly string BookStoreSeqName = $"{BookStoreAppName}-Seq";
+
+        }
+    }
 }

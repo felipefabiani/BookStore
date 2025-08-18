@@ -6,15 +6,16 @@ namespace BookStore.Api.Infrastructure;
 
 public static class SetUpDatabaseExtension
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services)
+    public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
     {
-        var connectionString = Environment.GetEnvironmentVariable(BookStoreConstants.ConnectionString);
+        var services = builder.Services;
+        
+        var connectionString = builder.Configuration
+            .GetConnectionString(BookStoreConstants.Services.BookStoreDatabaseName);
 
-        // AddDbContextBookStoreContext();
-        // AddDbContextBookStoreReadOnlyContext();
         AddDbContextFactoryBookStoreContext();
         AddDbContextFactoryBookStoreReadOnlyContext();       
-        return services;
+        return builder;
 
         void AddDbContextFactoryBookStoreContext()
         {
@@ -32,9 +33,9 @@ public static class SetUpDatabaseExtension
             services.AddDbContextFactory<BookStoreReadOnlyContext>(options =>
             {
                 options
-        #if DEBUG
+#if DEBUG
                     .EnableSensitiveDataLogging()
-        #endif
+#endif
                     .UseSqlServer(connectionString);
             });
         }

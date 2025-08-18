@@ -10,6 +10,7 @@ public static class SetUpSerilogExtension
     public static IHostBuilder AddSerilog(this IHostBuilder host)
     {
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+        var bsSeq = Environment.GetEnvironmentVariable("ConnectionStrings__BookStore-Seq")!;
 
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -18,9 +19,10 @@ public static class SetUpSerilogExtension
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .WriteTo.Seq(bsSeq)
             .CreateLogger();
 
-        host.UseSerilog();
+        //host.UseSerilog();
 
         return host;
     }

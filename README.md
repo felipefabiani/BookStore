@@ -1,5 +1,15 @@
 # BookStore
 
+Setting up:
+Add database password to the secret file. From solution folder run command.
+dotnet user-secrets --project BookStore.AppHost set "Parameters:sql-sa-password" <password>
+
+
+File is under folder:
+C:\Users\<user>\AppData\Roaming\Microsoft\UserSecrets\<UserSecretsId>
+
+<UserSecretsId> is defined on project file, in this case BookStore.AppHost.csproj
+
 Using Sql Server docket
 current image: docker pull mcr.microsoft.com/mssql/server:2022-latest
 container: 

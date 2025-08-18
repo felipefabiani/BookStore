@@ -2,7 +2,9 @@ using BookStore.Api.Infrastructure;
 using BookStore.Api.Model;
 using BookStore.Database.Context;
 using BookStore.Database.Infrastructure;
+using BookStore.Helper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ServiceDiscovery;
 using Serilog;
 
 namespace BookStore.Api;
@@ -18,10 +20,11 @@ public partial class Program
 
             builder.AddServiceDefaults();
             builder.Host.AddSerilog();
+            // builder.AddSeqEndpoint("BookStore-Seq");
 
             Log.Information("Starting up the Minimal API application");
 
-            builder.Services.AddDatabase();
+            builder.AddDatabase();
 
             // Add services to the container.
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -44,21 +47,30 @@ public partial class Program
 
             app.UseHttpsRedirection();
 
-            var summaries = new[]
-            {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            var summaries = new[] {
+                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            };
 
-            app.MapGet("/weatherforecast", (IDbContextFactory<BookStoreContext> contextFactory) =>
+            app.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver ) =>
             {
+                Log.Information("Handling /weatherforecast request {TESTE}", "test");
+                
                 var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    (
+                {
+                    var temp = Random.Shared.Next(-20, 55);
+                    var summary = summaries[Random.Shared.Next(summaries.Length)];
+
+                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
+
+                    return new WeatherForecast(
                         DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        Random.Shared.Next(-20, 55),
-                        summaries[Random.Shared.Next(summaries.Length)]
-                    ))
-                    .ToArray();
+                        temp,
+                        summary
+                    );
+                }).ToArray();
+
+                Log.Information("Returning forecast with {Count} entries", forecast.Length);
+
                 return forecast;
             })
             .WithName("GetWeatherForecast");
