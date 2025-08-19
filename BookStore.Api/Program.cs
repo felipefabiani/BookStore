@@ -5,6 +5,7 @@ using BookStore.Database.Infrastructure;
 using BookStore.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ServiceDiscovery;
+using Scalar.AspNetCore;
 using Serilog;
 
 namespace BookStore.Api;
@@ -37,6 +38,19 @@ public partial class Program
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(options =>
+                {
+                    // options.SwaggerEndpoint("/swagger/v1/swagger.json", "BookStore API V1");
+                    options.SwaggerEndpoint("/openapi/v1.json", "BookStore API V1");
+                });
+                app.UseReDoc(options =>
+                {
+                    //options.DocumentTitle = "BookStore API Documentation";
+                    //options.SpecUrl = "/swagger/v1/swagger.json";
+                    options.RoutePrefix = "docs"; // Serve ReDoc at /docs
+                    options.SpecUrl("/openapi/v1.json");
+                });
+                app.MapScalarApiReference();
 
                 Log.Information("Migration and Seed - {Environment}", SeedEnvironmentEnum.Dev);
                 var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
