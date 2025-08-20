@@ -1,10 +1,4 @@
-using Aspire.Hosting.ApplicationModel;
 using BookStore.AppHost;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
-using System.Data;
-using System.Diagnostics;
 
 const string bookStoreAppName = "BookStore";
 const string bookStoreApiName = $"{bookStoreAppName}-Api";
@@ -39,8 +33,6 @@ var api = builder.AddProject<Projects.BookStore_Api>(bookStoreApiName)
     .WithReference(db)
     .WaitFor(seq)
     .WaitFor(db)
-    .WithSwaggerUi()
-    .WithReDocUi()
     .WithScalarUi();
 
 
