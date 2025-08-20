@@ -66,19 +66,6 @@ public partial class Program
 
             app.MapDefaultEndpoints();
 
-            var apiVersionSet = app.NewApiVersionSet()
-               .HasDeprecatedApiVersion(new ApiVersion(1))
-               .HasApiVersion(new ApiVersion(2))
-               .HasApiVersion(new ApiVersion(3))
-               .ReportApiVersions()
-               .Build();
-
-            var routGroup = app.MapGroup("api/v{apiVersion:apiVersion}")
-                .WithApiVersionSet(apiVersionSet)
-                .HasDeprecatedApiVersion(1)
-                .HasApiVersion(2)
-                .HasApiVersion(3);
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
