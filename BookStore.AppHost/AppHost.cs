@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using BookStore.AppHost;
 
 const string bookStoreAppName = "BookStore";
@@ -7,8 +8,8 @@ const string bookStoreSqlName = $"{bookStoreAppName}-Database";
 const string bookStoreSeqName = $"{bookStoreAppName}-Seq";
 
 var builder = DistributedApplication.CreateBuilder(args);
-var saPassword = builder.AddParameter("sql-sa-password", secret: true)
-    .ExcludeFromManifest();
+var saPassword = builder.AddParameter("sql-sa-password", secret: true).ExcludeFromManifest();
+var jwtSecret = builder.AddParameter("jwt-secret", secret: true).ExcludeFromManifest();
 
 // var cache = builder.AddRedis("cache");
 
@@ -29,6 +30,7 @@ var sql = builder
 var db = sql.AddDatabase(bookStoreDatabaseName);
 
 var api = builder.AddProject<Projects.BookStore_Api>(bookStoreApiName)
+    .WithEnvironment("jwt-secret", jwtSecret)
     .WithReference(seq)
     .WithReference(db)
     .WaitFor(seq)

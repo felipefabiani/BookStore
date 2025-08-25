@@ -1,14 +1,28 @@
 # BookStore
 
 Setting up:
-Add database password to the secret file. From solution folder run command.
+Add database password to the secret file. From solution folder run the commands below:
 dotnet user-secrets --project BookStore.AppHost set "Parameters:sql-sa-password" <password>
+dotnet user-secrets --project BookStore.AppHost set "Parameters:jwt-secret" "{FABCB698-BFCC-457F-BD51-BBB0880109CB}"
 
 
+To see password, right click on the project and select "Manage User Secret"
 File is under folder:
 C:\Users\<user>\AppData\Roaming\Microsoft\UserSecrets\<UserSecretsId>
 
 <UserSecretsId> is defined on project file, in this case BookStore.AppHost.csproj
+
+
+
+
+To list the secres
+dotnet user-secrets --project BookStore.AppHost list
+
+Migration and seeding will be applyed when BookStore.Api starts
+Migration can be run manually:
+dotnet ef database update --project BookStore.Database --startup-project BookStore.Api --context BookStoreContext --connection "Data Source=127.0.0.1,1433;Initial Catalog=BookStore;User ID=sa;pwd=<password>;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+
+-----------------------------------
 
 Using Sql Server docket
 current image: docker pull mcr.microsoft.com/mssql/server:2022-latest

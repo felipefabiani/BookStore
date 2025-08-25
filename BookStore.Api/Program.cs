@@ -1,14 +1,18 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookStore.Api.Infrastructure;
+using BookStore.Api.Infrastructure.Auth;
 using BookStore.Api.Model;
 using BookStore.Database.Context;
-using BookStore.Database.Infrastructure;
-using BookStore.Helper;
+using BookStore.Database.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ServiceDiscovery;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
+using System.Text;
 
 namespace BookStore.Api;
 
@@ -18,12 +22,14 @@ public partial class Program
     {
         try
         {
-            
+
             var builder = WebApplication.CreateBuilder();
 
             builder.AddServiceDefaults();
             builder.Host.AddSerilog();
-            // builder.AddSeqEndpoint("BookStore-Seq");
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+            builder.Services.AddSingleton<ITokenProvider, TokenProvider>();
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
             Log.Information("Starting up the Minimal API application");
 
@@ -59,7 +65,25 @@ public partial class Program
             // Add services to the container.
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-            // builder.Services.AddAuthentication().AddJwtBearer();
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false; // Set to true in production
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero, // Remove delay of token expiration
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt-secret"]!)),
+                    };
+                });
+            builder.Services.AddAuthorization();
 
             builder.Services.AddOpenApi();
             var app = builder.Build();
@@ -75,12 +99,22 @@ public partial class Program
                     var apiVersion = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
                     foreach (var description in apiVersion.ApiVersionDescriptions)
-                {
+                    {
                         options.AddDocument(
                             description.GroupName.ToString(),
                             $"BookStore API {description.GroupName}",
                             $"openapi/{description.GroupName}.json");
                     }
+
+                    options
+                        .AddPreferredSecuritySchemes("OAuth2")
+                        .AddPasswordFlow("OAuth2", flow =>
+                        {
+
+                            flow.Username = "test";
+                            flow.Password = "123";
+                            flow.SelectedScopes = ["profile", "email"];
+                        });
                 });
 
                 //Log.Information("Migration and Seed - {Environment}", SeedEnvironmentEnum.Dev);
@@ -91,6 +125,9 @@ public partial class Program
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();            // Optional in Minimal API, but safe to include
+            app.UseAuthentication();     // Must come before authorization
+            app.UseAuthorization();      // Required for [Authorize] or RequireAuthorization()
 
             var summaries = new[] {
                 "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -190,10 +227,12 @@ public partial class Program
             .MapToApiVersion(2)
             .MapToApiVersion(3);
 
-            weatherGroup.MapGet("/Test", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
+            weatherGroup.MapGet("/Test", (
+                IDbContextFactory<BookStoreContext> contextFactory,
+                ServiceEndpointResolver serviceEndpointResolver) =>
             {
                 Log.Information("Handling /weatherforecast request {TESTE}", "test");
-                
+
                 var forecast = Enumerable.Range(1, 5).Select(index =>
                 {
                     var temp = Random.Shared.Next(-20, 55);
@@ -217,6 +256,43 @@ public partial class Program
             .MapToApiVersion(2)
             .MapToApiVersion(3);
 
+
+            var authGroup = routGroup.MapGroup("auth");
+
+            authGroup.MapPost("/login", (
+                UserLoginDto login,
+                ITokenProvider tp) =>
+            {
+                // Replace with real user validation
+                if (login.Username != "test" || login.Password != "123")
+                    return Results.Unauthorized();
+
+                var testUser = new User
+                {
+
+                    Email = login.Username,
+                    Password = login.Password,
+                };
+
+                var token = tp.Create(testUser);
+                return Results.Ok(token);
+            })
+                .WithName("Login")
+                .MapToApiVersion(2)
+                .MapToApiVersion(3);
+
+            authGroup.MapGet("/secure-data", [Authorize] () =>
+            {
+                return Results.Ok("This is protected data");
+            }).WithName("Data1");
+            authGroup.MapGet("/secure-data2", () =>
+            {
+                return Results.Ok("This is protected data");
+            }).WithName("Data2")
+            .RequireAuthorization();
+
+
+
             app.Run();
         }
         catch (Exception ex)
@@ -225,3 +301,5 @@ public partial class Program
         }
     }
 }
+
+public record UserLoginDto(string Username, string Password);
