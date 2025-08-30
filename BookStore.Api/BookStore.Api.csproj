@@ -12,6 +12,7 @@
     <PackageReference Include="Aspire.Seq" Version="9.4.1" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BookStore.Database\BookStore.Database.csproj" />
     <ProjectReference Include="..\BookStore.Helpers\BookStore.Helpers.csproj" />
+    <ProjectReference Include="..\BookStore.Models\BookStore.Models.csproj" />
     <ProjectReference Include="..\BookStore.ServiceDefaults\BookStore.ServiceDefaults.csproj" />
   </ItemGroup>
 

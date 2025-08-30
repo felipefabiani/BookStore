@@ -2,27 +2,21 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookStore.Api.Infrastructure;
 using BookStore.Api.Infrastructure.Auth;
-using BookStore.Api.Model;
-using BookStore.Database.Context;
-using BookStore.Database.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ServiceDiscovery;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 namespace BookStore.Api;
 
 public partial class Program
 {
-    public static async Task Main()
+    public static void Main()
     {
         try
         {
-
             var builder = WebApplication.CreateBuilder();
 
             builder.AddServiceDefaults();
@@ -34,8 +28,6 @@ public partial class Program
             Log.Information("Starting up the Minimal API application");
 
             builder.AddDatabase();
-
-
             builder.Services.AddOpenApi();
             builder.Services.AddOpenApi("v2");
             builder.Services.AddOpenApi("v3");
@@ -60,7 +52,7 @@ public partial class Program
             .EnableApiVersionBinding();
             builder.Services.AddEndpointsApiExplorer();
 
-            // builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
+
 
             // Add services to the container.
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -128,170 +120,7 @@ public partial class Program
             app.UseRouting();            // Optional in Minimal API, but safe to include
             app.UseAuthentication();     // Must come before authorization
             app.UseAuthorization();      // Required for [Authorize] or RequireAuthorization()
-
-            var summaries = new[] {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
-
-
-            var apiVersionSet = app.NewApiVersionSet()
-               .HasDeprecatedApiVersion(new ApiVersion(1))
-               .HasApiVersion(new ApiVersion(2))
-               .HasApiVersion(new ApiVersion(3))
-               .ReportApiVersions()
-               .Build();
-
-            var routGroup = app.MapGroup("api/v{apiVersion:apiVersion}")
-                .WithApiVersionSet(apiVersionSet)
-                .HasDeprecatedApiVersion(1)
-                .HasApiVersion(2)
-                .HasApiVersion(3);
-            var weatherGroup = routGroup.MapGroup("weather");
-
-            weatherGroup.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V1"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("GetWeatherForecastV1")
-            .MapToApiVersion(1);
-
-            weatherGroup.MapGet("/user/get", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V1"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("UserGetV1")
-            .MapToApiVersion(1);
-
-            weatherGroup.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V2"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("GetWeatherForecastV2")
-            .MapToApiVersion(2)
-            .MapToApiVersion(3);
-
-            weatherGroup.MapGet("/Test", (
-                IDbContextFactory<BookStoreContext> contextFactory,
-                ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}�C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V2"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("Test")
-            .MapToApiVersion(2)
-            .MapToApiVersion(3);
-
-
-            var authGroup = routGroup.MapGroup("auth");
-
-            authGroup.MapPost("/login", (
-                UserLoginDto login,
-                ITokenProvider tp) =>
-            {
-                // Replace with real user validation
-                if (login.Username != "test" || login.Password != "123")
-                    return Results.Unauthorized();
-
-                var testUser = new User
-                {
-
-                    Email = login.Username,
-                    Password = login.Password,
-                };
-
-                var token = tp.Create(testUser);
-                return Results.Ok(token);
-            })
-                .WithName("Login")
-                .MapToApiVersion(2)
-                .MapToApiVersion(3);
-
-            authGroup.MapGet("/secure-data", [Authorize] () =>
-            {
-                return Results.Ok("This is protected data");
-            }).WithName("Data1");
-            authGroup.MapGet("/secure-data2", () =>
-            {
-                return Results.Ok("This is protected data");
-            }).WithName("Data2")
-            .RequireAuthorization();
-
-
+            app.RegisterEndpoints();
 
             app.Run();
         }
