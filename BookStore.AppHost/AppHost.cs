@@ -35,7 +35,8 @@ var api = builder.AddProject<Projects.BookStore_Api>(bookStoreApiName)
     .WithReference(db)
     .WaitFor(seq)
     .WaitFor(db)
-    .WithScalarUi();
+    .WithScalarUi()
+    .w;
 
 
 //builder.AddProject<Projects.BookStoreApp>("bookstoreapp")
