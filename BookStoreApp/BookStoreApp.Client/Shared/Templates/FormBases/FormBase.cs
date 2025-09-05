@@ -1,34 +1,38 @@
 ﻿using BookStoreApp.Client;
 using BookStoreApp.Client.Shared;
 using LanguageExt;
+using LanguageExt.Common;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net;
 
-namespace BookStoreApp.Components.FormBases;
-public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
-    where TService : IService
+namespace BookStoreApp.Client.Shared.Templates.FormBases;
+public abstract class FormBase<TRequest, TResponse> : ComponentBase
     where TRequest : class, new()
     where TResponse : notnull, new()
 {
     [Inject] protected IDialogService DialogService { get; set; } = default!;
     [Inject] protected ISnackbar SnackbarFormBase { get; set; } = default!;
-    [Inject] protected TService Service { get; set; } = default!;
 
-    [Parameter] public Action<Fin<TResponse>> SuccessCallBack { get; set; } = default!;
-    [Parameter] public Action<Fin<TResponse>> FailCallBack { get; set; } = default!;
+    [Parameter] public Action<TResponse> SuccessCallBack { get; set; } = default!;
+    [Parameter] public Action<Error> FailCallBack { get; set; } = default!;
 
-
-    // [Parameter] public string HttpClientName { get; set; } = default!;
-    // [Parameter] public string Endpoint { get; set; } = default!;
     [Parameter] public string? SuccessMessage { get; set; } = null;
     [Parameter] public string? FailedMessage { get; set; } = null;
     [Parameter] public bool DisableSuccessDefaultMessage { get; set; } = false;
     [Parameter] public bool DisableFailDefaultMessage { get; set; } = false;
     [Parameter] public string? ButtonSubmitText { get; set; } = null;
-
     
-    protected TRequest _model = new();
+    public TRequest Model { 
+        get => _model; 
+        set 
+        {
+            _model = value; 
+            StateHasChanged();
+        }
+    }
+
+    private TRequest _model = new();
     protected Fin<TResponse> _response = default!;
 
     protected CancellationTokenSource cancellationTokenSource = new();
@@ -48,8 +52,17 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
 
         try
         {
-            _response = await SendMessage();
-
+            _response = await SendMessage.Invoke();
+             await _response.Match(
+                Succ: async succ =>
+                {
+                    await Reset();
+                    await Success(succ);
+                },
+                Fail: async fail =>
+                {
+                    await Fail(fail);
+                });
             //switch (_response.StatusCode)
             //{
             //    case HttpStatusCode.OK:
@@ -93,18 +106,17 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
         }
     }
 
-    protected abstract Task<Fin<TResponse>> SendMessage();
+    public required Func<Task<Fin<TResponse>>> SendMessage;
 
-    protected virtual async Task Fail()
+    protected virtual async Task Fail(Error bad)
     {
-        //var bad = await response.Content.ReadFromJsonAsync<BadRequestResponse>();
-        //ShowFailMessage(bad);
+        ShowFailMessage(bad.Message);
         await Task.CompletedTask;
     }
-    protected virtual Task Success()
+    protected virtual async Task Success(TResponse response)
     {
         ShowSuccesMessage();
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 
     protected void ShowFailMessage(string? msg = null)
@@ -164,10 +176,10 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
         }
     }
 
-    protected virtual Task Cancel()
+    protected virtual async Task Cancel()
     {
         ResetCancelationToken();
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
     protected virtual async Task Reset()
     {

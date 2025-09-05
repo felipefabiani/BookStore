@@ -1,11 +1,13 @@
-using MudBlazor.Services;
 using BookStoreApp.Client.Pages;
+using BookStoreApp.Client.Pages.Auth.Login;
 using BookStoreApp.Components;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

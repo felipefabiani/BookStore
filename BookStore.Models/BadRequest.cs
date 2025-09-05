@@ -14,11 +14,6 @@ public record BadRequest(List<string>? Errors) : Error
 
     public override bool IsExpected => throw new NotImplementedException();
 
-    public override bool Is<E>()
-    {
-        return this is E;
-    }
-
     public override ErrorException ToErrorException()
     {
         throw new NotImplementedException();
