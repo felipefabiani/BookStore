@@ -77,10 +77,10 @@
         base.OnAfterRender(firstRender);
     }
     
-    private void LoginFail(Error err)
+    private void LoginFail(ErrorRequest err)
     {
         // failMessage = string.Join("<br/>", resp?.errors?.GeneralErrors ?? new string[] {"Login Fail"});
-        failMessage = err.Message;
+        failMessage = err.Message!;
         showFailMessage = true;
         StateHasChanged();
     }

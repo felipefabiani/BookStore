@@ -25,15 +25,15 @@ var sql = builder
     .AddSqlServer(bookStoreSqlName, saPassword, 1433)
     // .WithEndpoint(port: 1433, targetPort: 1433, name:"TESTE-DB")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithContainerName(bookStoreSqlName);
+    .WithContainerName(bookStoreSqlName)
+    .WithReference(seq)
+    .WaitFor(seq);
 
 var db = sql.AddDatabase(bookStoreDatabaseName);
 
 var api = builder.AddProject<Projects.BookStore_Api>(bookStoreApiName)
     .WithEnvironment("jwt-secret", jwtSecret)
-    .WithReference(seq)
     .WithReference(db)
-    .WaitFor(seq)
     .WaitFor(db)
     .WithScalarUi();
 

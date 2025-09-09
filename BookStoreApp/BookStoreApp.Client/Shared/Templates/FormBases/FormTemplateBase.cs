@@ -1,4 +1,5 @@
-﻿using LanguageExt;
+﻿using BookStore.Models;
+using LanguageExt;
 using LanguageExt.Common;
 using Microsoft.AspNetCore.Components;
 
@@ -12,7 +13,7 @@ public abstract class FormTemplateBase<TRequest, TResponse> : FormBase<TRequest,
     [Parameter] public RenderFragment<TRequest> FormTemplate { get; set; } = default!;
     [Parameter] public RenderFragment ButtonsTemplate { get; set; } = default!;
 
-    protected override async Task Fail(Error err)
+    protected override async Task Fail(ErrorRequest err)
     {
         ShowFailMessage(err.Message);
         FailCallBack?.Invoke(err);

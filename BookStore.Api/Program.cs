@@ -2,6 +2,7 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookStore.Api.Infrastructure;
 using BookStore.Api.Infrastructure.Auth;
+using BookStore.Api.Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -52,7 +53,17 @@ public partial class Program
             .EnableApiVersionBinding();
             builder.Services.AddEndpointsApiExplorer();
 
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                    // WithOrigins("https://localhost:58725;http://localhost:5088")
+                          .AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             // Add services to the container.
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -116,7 +127,9 @@ public partial class Program
                 //Log.Information("Migration and Seed - done");
             }
 
+            app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseRouting();            // Optional in Minimal API, but safe to include
             app.UseAuthentication();     // Must come before authorization
             app.UseAuthorization();      // Required for [Authorize] or RequireAuthorization()

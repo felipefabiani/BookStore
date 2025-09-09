@@ -1,4 +1,5 @@
-﻿using BookStoreApp.Client;
+﻿using BookStore.Models;
+using BookStoreApp.Client;
 using BookStoreApp.Client.Shared;
 using LanguageExt;
 using LanguageExt.Common;
@@ -15,7 +16,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
     [Inject] protected ISnackbar SnackbarFormBase { get; set; } = default!;
 
     [Parameter] public Action<TResponse> SuccessCallBack { get; set; } = default!;
-    [Parameter] public Action<Error> FailCallBack { get; set; } = default!;
+    [Parameter] public Action<ErrorRequest> FailCallBack { get; set; } = default!;
 
     [Parameter] public string? SuccessMessage { get; set; } = null;
     [Parameter] public string? FailedMessage { get; set; } = null;
@@ -33,7 +34,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
     }
 
     private TRequest _model = new();
-    protected Fin<TResponse> _response = default!;
+    protected Result<TResponse> _response = default!;
 
     protected CancellationTokenSource cancellationTokenSource = new();
 
@@ -54,12 +55,12 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         {
             _response = await SendMessage.Invoke();
              await _response.Match(
-                Succ: async succ =>
+                success: async succ =>
                 {
                     await Reset();
                     await Success(succ);
                 },
-                Fail: async fail =>
+                failure: async fail =>
                 {
                     await Fail(fail);
                 });
@@ -106,9 +107,9 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         }
     }
 
-    public required Func<Task<Fin<TResponse>>> SendMessage;
+    public required Func<Task<Result<TResponse>>> SendMessage;
 
-    protected virtual async Task Fail(Error bad)
+    protected virtual async Task Fail(ErrorRequest bad)
     {
         ShowFailMessage(bad.Message);
         await Task.CompletedTask;

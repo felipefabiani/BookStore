@@ -1,4 +1,5 @@
-﻿using BookStoreApp.Client;
+﻿using BookStore.Models;
+using BookStoreApp.Client;
 using BookStoreApp.Client.Shared;
 using LanguageExt;
 using Microsoft.AspNetCore.Components;
@@ -15,8 +16,8 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
     [Inject] protected ISnackbar SnackbarFormBase { get; set; } = default!;
     [Inject] protected TService Service { get; set; } = default!;
 
-    [Parameter] public Action<Fin<TResponse>> SuccessCallBack { get; set; } = default!;
-    [Parameter] public Action<Fin<TResponse>> FailCallBack { get; set; } = default!;
+    [Parameter] public Action<Result<TResponse>> SuccessCallBack { get; set; } = default!;
+    [Parameter] public Action<Result<TResponse>> FailCallBack { get; set; } = default!;
 
 
     // [Parameter] public string HttpClientName { get; set; } = default!;
@@ -29,7 +30,7 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
 
     
     protected TRequest _model = new();
-    protected Fin<TResponse> _response = default!;
+    protected Result<TResponse> _response = default!;
 
     protected CancellationTokenSource cancellationTokenSource = new();
 
@@ -93,7 +94,7 @@ public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
         }
     }
 
-    protected abstract Task<Fin<TResponse>> SendMessage();
+    protected abstract Task<Result<TResponse>> SendMessage();
 
     protected virtual async Task Fail()
     {

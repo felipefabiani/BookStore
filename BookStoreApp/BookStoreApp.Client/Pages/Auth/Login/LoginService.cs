@@ -1,40 +1,30 @@
-﻿using BookStore.Models.Auth;
+﻿using BookStore.Helper;
+using BookStore.Models;
+using BookStore.Models.Extentions;
 using BookStore.Models.Feature.Login;
 using BookStoreApp.Client.Shared.Templates.FormBases;
-using LanguageExt;
-using LanguageExt.Common;
+using System.Net.Http.Json;
 
 namespace BookStoreApp.Client.Pages.Auth.Login;
 
 public interface ILoginService : IService
 {
-    Task<Fin<UserLoginResponse>> Login(UserLoginRequest userLogin);
+    Task<Result<UserLoginResponse>> Login(UserLoginRequest userLogin);
 }
 
-public class LoginService : ILoginService
+public class LoginService(IHttpClientFactory httpClientFactory) : Service, ILoginService
 {
     // This class can be used to encapsulate any business logic related to the login process.
     // For example, you might want to add methods for validating user credentials,
     // logging login attempts, or interacting with a user database.
+    private HttpClient _httpClient = httpClientFactory.CreateClient(BookStoreConstants.Services.BookStoreApiName);
 
-    public async Task<Fin<UserLoginResponse>> Login(UserLoginRequest userLogin)
+    public async Task<Result<UserLoginResponse>> Login(UserLoginRequest userLogin)
     {
-        return
-            await Task.FromResult(
-                Fin<UserLoginResponse>.Fail(new Exception("TEST"))
-            );
+        var ret = await _httpClient.PostAsJsonAsync("login", userLogin, CancTokenSource.Token);
 
-        //return await Task.FromResult(new UserLoginResponse
-        //{
-        //    FullName = "Felipe Fabiani",
-        //    UserClaims = ["Claim1", "Claim2"],
-        //    UserRoles = ["Admin", "User"],
-        //    Token = new JwtToken
-        //    {
-        //        Value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkZlbGlwZSBBZmFiaWFuaSIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-        //        ExpiryDate = DateTime.UtcNow.AddHours(1)
-        //    }
-        //});
+        var result = await ret.ToResult<UserLoginResponse>();
+        return result;
     }
 }
 
