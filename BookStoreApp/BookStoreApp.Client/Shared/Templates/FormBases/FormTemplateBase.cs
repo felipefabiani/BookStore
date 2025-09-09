@@ -13,6 +13,8 @@ public abstract class FormTemplateBase<TRequest, TResponse> : FormBase<TRequest,
     [Parameter] public RenderFragment<TRequest> FormTemplate { get; set; } = default!;
     [Parameter] public RenderFragment ButtonsTemplate { get; set; } = default!;
 
+    [Parameter] public Action? ResetCallBack { get; set; }
+
     protected override async Task Fail(ErrorRequest err)
     {
         ShowFailMessage(err.Message);
@@ -28,6 +30,7 @@ public abstract class FormTemplateBase<TRequest, TResponse> : FormBase<TRequest,
 
     protected override async Task Reset()
     {
+        ResetCallBack?.Invoke();
         await base.Reset();
         Model = DefaultModel.CloneJson();
         StateHasChanged();

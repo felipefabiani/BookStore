@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@using BookStore.Models
 @using BookStore.Models.Feature.Login
 @using LanguageExt.Common
 
@@ -17,8 +18,8 @@
             SuccessCallBack=@(async user => await ExecuteLogin(user))
             FailCallBack=@(err => LoginFail(err))
             ButtonSubmitText="Login"
-            DisableFailDefaultMessage=true
-            DisableSuccessDefaultMessage=true
+            SuccessMessage="Login successful"
+            ResetCallBack=ResetShowFailMessage
         >
             <HeaderTemplate>
                 <MudElement HtmlTag="h1">Login</MudElement>
@@ -30,7 +31,7 @@
                           ContentAlignment="HorizontalAlignment.Center"
                           Elevation="6"
                           ShowCloseIcon="true"
-                          CloseIconClicked="(() => showFailMessage = false)">@failMessage</MudAlert>
+                              CloseIconClicked=ResetShowFailMessage>@failMessage</MudAlert>
                 }
                 <MudTextField id="login-email"
                               InputType="InputType.Text"
@@ -84,7 +85,10 @@
         showFailMessage = true;
         StateHasChanged();
     }
-
+    private void ResetShowFailMessage()
+    {
+        showFailMessage = false;
+    }
     private async Task ExecuteLogin(UserLoginResponse resp)
     {
 
