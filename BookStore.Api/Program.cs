@@ -1,35 +1,34 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookStore.Api.Infrastructure;
-using BookStore.Api.Model;
-using BookStore.Database.Context;
-using BookStore.Database.Infrastructure;
-using BookStore.Helper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ServiceDiscovery;
+using BookStore.Api.Infrastructure.Auth;
+using BookStore.Api.Infrastructure.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
+using System.Reflection;
+using System.Text;
 
 namespace BookStore.Api;
 
 public partial class Program
 {
-    public static async Task Main()
+    public static void Main()
     {
         try
         {
-            
             var builder = WebApplication.CreateBuilder();
 
             builder.AddServiceDefaults();
             builder.Host.AddSerilog();
-            // builder.AddSeqEndpoint("BookStore-Seq");
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+            builder.Services.AddSingleton<ITokenProvider, TokenProvider>();
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
             Log.Information("Starting up the Minimal API application");
 
             builder.AddDatabase();
-
-
             builder.Services.AddOpenApi();
             builder.Services.AddOpenApi("v2");
             builder.Services.AddOpenApi("v3");
@@ -54,12 +53,40 @@ public partial class Program
             .EnableApiVersionBinding();
             builder.Services.AddEndpointsApiExplorer();
 
-            // builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                    // WithOrigins("https://localhost:58725;http://localhost:5088")
+                          .AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             // Add services to the container.
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-            // builder.Services.AddAuthentication().AddJwtBearer();
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false; // Set to true in production
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero, // Remove delay of token expiration
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt-secret"]!)),
+                    };
+                });
+            builder.Services.AddAuthorization();
 
             builder.Services.AddOpenApi();
             var app = builder.Build();
@@ -75,12 +102,22 @@ public partial class Program
                     var apiVersion = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
                     foreach (var description in apiVersion.ApiVersionDescriptions)
-                {
+                    {
                         options.AddDocument(
                             description.GroupName.ToString(),
                             $"BookStore API {description.GroupName}",
                             $"openapi/{description.GroupName}.json");
                     }
+
+                    options
+                        .AddPreferredSecuritySchemes("OAuth2")
+                        .AddPasswordFlow("OAuth2", flow =>
+                        {
+
+                            flow.Username = "test";
+                            flow.Password = "123";
+                            flow.SelectedScopes = ["profile", "email"];
+                        });
                 });
 
                 //Log.Information("Migration and Seed - {Environment}", SeedEnvironmentEnum.Dev);
@@ -90,132 +127,13 @@ public partial class Program
                 //Log.Information("Migration and Seed - done");
             }
 
+            app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
-
-            var summaries = new[] {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
-
-
-            var apiVersionSet = app.NewApiVersionSet()
-               .HasDeprecatedApiVersion(new ApiVersion(1))
-               .HasApiVersion(new ApiVersion(2))
-               .HasApiVersion(new ApiVersion(3))
-               .ReportApiVersions()
-               .Build();
-
-            var routGroup = app.MapGroup("api/v{apiVersion:apiVersion}")
-                .WithApiVersionSet(apiVersionSet)
-                .HasDeprecatedApiVersion(1)
-                .HasApiVersion(2)
-                .HasApiVersion(3);
-            var weatherGroup = routGroup.MapGroup("weather");
-
-            weatherGroup.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V1"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("GetWeatherForecastV1")
-            .MapToApiVersion(1);
-
-            weatherGroup.MapGet("/user/get", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V1"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("UserGetV1")
-            .MapToApiVersion(1);
-
-            weatherGroup.MapGet("/weatherforecast", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}°C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V2"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("GetWeatherForecastV2")
-            .MapToApiVersion(2)
-            .MapToApiVersion(3);
-
-            weatherGroup.MapGet("/Test", async (IDbContextFactory<BookStoreContext> contextFactory, ServiceEndpointResolver serviceEndpointResolver) =>
-            {
-                Log.Information("Handling /weatherforecast request {TESTE}", "test");
-                
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                {
-                    var temp = Random.Shared.Next(-20, 55);
-                    var summary = summaries[Random.Shared.Next(summaries.Length)];
-
-                    Log.Debug("Generated forecast for day {Day}: {Temp}�C, {Summary}", index, temp, summary);
-
-                    return new WeatherForecast(
-                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        temp,
-                        summary,
-                        "Api V2"
-                    );
-                }).ToArray();
-
-                Log.Information("Returning forecast with {Count} entries", forecast.Length);
-
-                return forecast;
-            })
-            .WithName("Test")
-            .MapToApiVersion(2)
-            .MapToApiVersion(3);
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseRouting();            // Optional in Minimal API, but safe to include
+            app.UseAuthentication();     // Must come before authorization
+            app.UseAuthorization();      // Required for [Authorize] or RequireAuthorization()
+            app.RegisterEndpoints();
 
             app.Run();
         }
@@ -225,3 +143,5 @@ public partial class Program
         }
     }
 }
+
+public record UserLoginDto(string Username, string Password);

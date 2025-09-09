@@ -31,18 +31,26 @@ public static class UrlExtension
         // Concat all IEnumerable properties into a comma separated string
         foreach (var key in propertyNames)
         {
-            var valueType = properties[key].GetType();
+            var prop = properties[key];
+            if (prop is null)
+            {
+                continue;
+            }
+
+            var valueType = prop.GetType();
             var valueElemType = valueType.IsGenericType
                                     ? valueType.GetGenericArguments()[0]
                                     : valueType.GetElementType();
 
-            if (valueElemType.IsPrimitive || valueElemType == typeof(string))
+            if (valueElemType?.IsPrimitive == true || 
+                valueElemType == typeof(string))
             {
                 var enumerable = properties[key] as IEnumerable;
-                properties[key] = string.Join(separator, enumerable.Cast<object>());
+                if (enumerable is not null)
+                {
+                    properties[key] = string.Join(separator, enumerable.Cast<object>());
+                }
             }
-
-
         }
 
         // Concat all key/value pairs into a string separated by ampersand

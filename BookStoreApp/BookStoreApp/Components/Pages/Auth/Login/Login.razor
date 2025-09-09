@@ -1,0 +1,121 @@
+﻿@* @page "/login"
+@using BookStore.Api.Endpoints.Login.Commands.LoginCmd
+@using BookStore.Models.Feature.Login
+
+
+@inject NavigationManager NavManager
+@inject ILoginService Service
+
+<PageTitle>Login</PageTitle>
+
+ <MudGrid Justify="Justify.Center">
+    <MudItem md="6" xs="12">
+       <CommandForm 
+           @ref=commandFormRef
+            TRequest=UserLoginRequest
+            TResponse=UserLoginResponse
+            DefaultModel=@(new UserLoginRequest {Email="admin.test@article.ie", Password="123456"})
+            SuccessCallBack=@(async user => MatchResponse(user))
+            FailCallBack=@(user => MatchResponse(user))
+            ButtonSubmitText="Login"
+            DisableFailDefaultMessage=true
+            DisableSuccessDefaultMessage=true>
+            <HeaderTemplate>
+                <MudElement HtmlTag="h1">Login</MudElement>
+            </HeaderTemplate>
+            <FormTemplate Context="model">
+                @if (showFailMessage)
+                {
+                    <MudAlert Severity="Severity.Error"
+                          ContentAlignment="HorizontalAlignment.Center"
+                          Elevation="6"
+                          ShowCloseIcon="true"
+                          CloseIconClicked="(() => showFailMessage = false)">@failMessage</MudAlert>
+                }
+                <MudTextField id="login-email"
+                              InputType="InputType.Text"
+                              Label="Email"
+                              Class="mt-3"
+                              @bind-Value="model.Email"
+                              For="@(() => model.Email)" />
+                <MudTextField id="login-password"
+                              InputType="InputType.Password"
+                              Label="Password"
+                              Class="mt-3"
+                              @bind-Value="model.Password"
+                              For="@(() => model.Password)" />
+            </FormTemplate>
+        </CommandForm>
+    </MudItem>
+</MudGrid>
+ 
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl
+    {
+        get => string.IsNullOrWhiteSpace(_returnUrl) ? "/" : _returnUrl;
+        set => _returnUrl = value;
+    }
+
+    private CommandForm<UserLoginRequest, UserLoginResponse> commandFormRef = default!;
+
+    private string _returnUrl = string.Empty;
+    private UserLoginResponse? loggedUser;
+    private string failMessage = string.Empty;
+    private bool showFailMessage = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {            
+            commandFormRef.SendMessage = async () =>
+            {
+                return await Service.Login(commandFormRef.Model!);
+            };
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    private void MatchResponse(Fin<UserLoginResponse> resp)
+    {
+        resp.Match(
+            Succ: async user => await ExecuteLogin(user),
+            Fail: errors => LoginFail(resp)
+    );
+    }
+    
+    private void LoginFail(Fin<UserLoginResponse> resp)
+    {
+        // failMessage = string.Join("<br/>", resp?.errors?.GeneralErrors ?? new string[] {"Login Fail"});
+        showFailMessage = true;
+        StateHasChanged();
+    }
+
+    private async Task ExecuteLogin(UserLoginResponse resp)
+    {
+
+        // var result = await AuthService.Login(resp);
+
+        // if (result is not null)
+        // {
+        //     NavManager.NavigateTo(ReturnUrl);
+        // }
+        // else
+        // {
+        //     Snackbar.Add("There was an error when trying to log in", Severity.Error);
+        // }
+
+        // if (resp.HasToken)
+        // {
+        //     loggedUser = resp;
+        //     Snackbar.Add($"User {resp.FullName} loged in");
+        // }
+        // else
+        // {
+        //     Snackbar.Add($"Oppppss!!!");
+        // }
+
+        await Task.CompletedTask;
+    }
+} *@

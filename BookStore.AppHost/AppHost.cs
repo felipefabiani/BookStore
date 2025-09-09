@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using BookStore.AppHost;
 
 const string bookStoreAppName = "BookStore";
@@ -7,8 +8,8 @@ const string bookStoreSqlName = $"{bookStoreAppName}-Database";
 const string bookStoreSeqName = $"{bookStoreAppName}-Seq";
 
 var builder = DistributedApplication.CreateBuilder(args);
-var saPassword = builder.AddParameter("sql-sa-password", secret: true)
-    .ExcludeFromManifest();
+var saPassword = builder.AddParameter("sql-sa-password", secret: true).ExcludeFromManifest();
+var jwtSecret = builder.AddParameter("jwt-secret", secret: true).ExcludeFromManifest();
 
 // var cache = builder.AddRedis("cache");
 
@@ -24,20 +25,21 @@ var sql = builder
     .AddSqlServer(bookStoreSqlName, saPassword, 1433)
     // .WithEndpoint(port: 1433, targetPort: 1433, name:"TESTE-DB")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithContainerName(bookStoreSqlName);
+    .WithContainerName(bookStoreSqlName)
+    .WithReference(seq)
+    .WaitFor(seq);
 
 var db = sql.AddDatabase(bookStoreDatabaseName);
 
 var api = builder.AddProject<Projects.BookStore_Api>(bookStoreApiName)
-    .WithReference(seq)
+    .WithEnvironment("jwt-secret", jwtSecret)
     .WithReference(db)
-    .WaitFor(seq)
     .WaitFor(db)
     .WithScalarUi();
 
 
-//builder.AddProject<Projects.BookStoreApp>("bookstoreapp")
-//    .WithReference(bsApi)
-//    .WaitFor(bsApi);
+builder.AddProject<Projects.BookStoreApp>("bookstoreapp")
+    .WithReference(api)
+    .WaitFor(api);
 
 builder.Build().Run();
