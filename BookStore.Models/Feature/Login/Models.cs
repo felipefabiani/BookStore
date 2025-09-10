@@ -28,14 +28,6 @@ public class UserLoginRequestValidator :
             .MaximumLength(10)
             .WithMessage("Password length must be between 6 and 10 characters!");
     }
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue1 => async (model, propertyName) =>
-    {
-        var result = await ValidateAsync(ValidationContext<UserLoginRequest>.CreateWithOptions((UserLoginRequest)model, x => x.IncludeProperties(propertyName)));
-        return
-            result.IsValid ?
-            (IEnumerable<string>)Array.Empty<string>() :
-            result.Errors.Select(e => e.ErrorMessage);
-    };
 }
 
 public class UserLoginResponse
@@ -52,17 +44,3 @@ public class NullUserLoginResponse : UserLoginResponse
     public override bool HasToken { get => false; }
     public static NullUserLoginResponse Empty => new NullUserLoginResponse();
 }
-
-public abstract class FluentValueValidator<T> : AbstractValidator<T>
-{
-
-    public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-    {
-        var result = await ValidateAsync(ValidationContext<T>.CreateWithOptions((T)model, x => x.IncludeProperties(propertyName)));
-        return
-            result.IsValid ?
-            (IEnumerable<string>)Array.Empty<string>() :
-            result.Errors.Select(e => e.ErrorMessage);
-    };
-}
-

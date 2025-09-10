@@ -1,11 +1,8 @@
 ﻿using BookStore.Models;
-using BookStoreApp.Client;
-using BookStoreApp.Client.Shared;
-using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Net;
+using FV = FluentValidation;
+
 
 namespace BookStoreApp.Client.Shared.Templates.FormBases;
 public abstract class FormBase<TRequest, TResponse> : ComponentBase
@@ -14,6 +11,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
 {
     [Inject] protected IDialogService DialogService { get; set; } = default!;
     [Inject] protected ISnackbar SnackbarFormBase { get; set; } = default!;
+    [Inject] protected FV.AbstractValidator<TRequest>? Validator { get; set; }
 
     [Parameter] public Action<TResponse> SuccessCallBack { get; set; } = default!;
     [Parameter] public Action<ErrorRequest> FailCallBack { get; set; } = default!;
@@ -23,12 +21,13 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
     [Parameter] public bool DisableSuccessDefaultMessage { get; set; } = false;
     [Parameter] public bool DisableFailDefaultMessage { get; set; } = false;
     [Parameter] public string? ButtonSubmitText { get; set; } = null;
-    
-    public TRequest Model { 
-        get => _model; 
-        set 
+
+    public TRequest Model
+    {
+        get => _model;
+        set
         {
-            _model = value; 
+            _model = value;
             StateHasChanged();
         }
     }
@@ -54,39 +53,16 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         try
         {
             _response = await SendMessage.Invoke();
-             await _response.Match(
-                success: async succ =>
-                {
-                    await Reset();
-                    await Success(succ);
-                },
-                failure: async fail =>
-                {
-                    await Fail(fail);
-                });
-            //switch (_response.StatusCode)
-            //{
-            //    case HttpStatusCode.OK:
-            //        await Reset();
-            //        await Success();
-            //        break;
-            //    case HttpStatusCode.Unauthorized:
-            //    case HttpStatusCode.Forbidden:
-            //        SnackbarFormBase.Add(
-            //            message: "User doesn't have permission.",
-            //            severity: Severity.Error);
-            //        break;
-            //    case HttpStatusCode.InternalServerError:
-            //        SnackbarFormBase.Add(
-            //            message: "An unexpected error has occurred.",
-            //            severity: Severity.Error);
-            //        break;
-
-            //    case HttpStatusCode.BadRequest:
-            //    default:
-            //        await Fail();
-            //        break;
-            //}
+            await _response.Match(
+               success: async succ =>
+               {
+                   await Reset();
+                   await Success(succ);
+               },
+               failure: async fail =>
+               {
+                   await Fail(fail);
+               });
         }
         catch (TaskCanceledException ex) when (ex.CancellationToken.IsCancellationRequested)
         {
@@ -196,6 +172,21 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         cancellationTokenSource.Dispose();
         cancellationTokenSource = new CancellationTokenSource();
     }
+
+    public Func<object, string, IEnumerable<string>> ValidateValue => (mod, propertyName) =>
+    {
+        if (Validator is null)
+        {
+            return [];
+        }
+        var result = Validator.Validate(
+            FV.ValidationContext<TRequest>
+                .CreateWithOptions((TRequest)mod, x => x.IncludeProperties(propertyName)));
+        return
+            result.IsValid
+            ? []
+            : result.Errors.Select(e => e.ErrorMessage);
+    };
 
     //protected override async Task OnInitializedAsync()
     //{

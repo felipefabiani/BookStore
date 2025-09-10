@@ -11,7 +11,7 @@ public sealed class LoginCommandEndpoint(IEndpointRouteBuilder app) :
         RouteGroup.MapPost("/", async (UserLoginRequest r, CancellationToken c) =>
         {
             // Simulate a delay for demonstration purposes
-            await Task.Delay(1000, c);
+            await Task.Delay(10_000, c);
             // Here you would typically call your service to handle the login logic
             // For now, we will just return a dummy response
             var response = new UserLoginResponse

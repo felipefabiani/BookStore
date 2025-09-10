@@ -1,7 +1,4 @@
-﻿using BookStore.Database.Context;
-using BookStore.Helper;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
+﻿using Serilog;
 
 namespace BookStore.Api.Infrastructure;
 

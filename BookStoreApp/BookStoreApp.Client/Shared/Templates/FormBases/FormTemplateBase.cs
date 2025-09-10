@@ -1,6 +1,4 @@
 ﻿using BookStore.Models;
-using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Components;
 
 namespace BookStoreApp.Client.Shared.Templates.FormBases;

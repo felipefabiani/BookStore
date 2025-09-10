@@ -1,4 +1,6 @@
 using BookStore.Helper;
+using BookStore.Models.Auth;
+using BookStoreApp.Client.Infrastructure;
 using BookStoreApp.Client.Pages.Auth.Login;
 using BookStoreApp.Components;
 using MudBlazor.Services;
@@ -7,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+
+builder.Services.AddFluentValidators([new JwtToken().GetType().Assembly.GetName().Name]);
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddHttpClient(BookStoreConstants.Services.BookStoreApiName, (provider, client) =>
 {
