@@ -1,4 +1,5 @@
 ﻿using BookStore.Models.Feature.Login;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Api.Endpoints.Login.Commands.LoginCmd;
 
@@ -8,29 +9,18 @@ public sealed class LoginCommandEndpoint(IEndpointRouteBuilder app) :
 {
     public override void MapEndpopint()
     {
-        RouteGroup.MapPost("/", async (UserLoginRequest r, CancellationToken c) =>
+        RouteGroup.MapPost("/", async (UserLoginRequest r, [FromServices] ILoginService service, CancellationToken c) =>
         {
-            // Simulate a delay for demonstration purposes
-            await Task.Delay(10_000, c);
-            // Here you would typically call your service to handle the login logic
-            // For now, we will just return a dummy response
-            var response = new UserLoginResponse
+            var response = await service.Login(r, c);
+
+            if (response.HasToken)
             {
-                // HasToken = true,
-                // Token = "dummy-token"
-            };
-            if (!response.HasToken && r.Email != "admin.test@article.ie")
-            {
-                return Results.BadRequest(new Exception("User or password incorrect!"));
+                return Results.Ok(response);
             }
-            return Results.Ok(response);
+            return Results.BadRequest(new Exception("User or password incorrect!"));
         })
             .WithName("LoginV1")
             .MapToApiVersion(1);
-        //    .WithTags("Authentication")
-        //    .Produces<LoginResponse>(StatusCodes.Status200OK)
-        //    .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
-        //    .RequireAuthorization();;
 
         RouteGroup.MapPost("/", async (UserLoginRequest r, LinkGenerator linkGenerator, CancellationToken c) =>
         {

@@ -1,6 +1,5 @@
-﻿using BookStoreApp.Components.FormBases;
+﻿using BookStoreApp.Client.Shared.Templates.FormBases;
 using FluentValidation;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Reflection;
 
 namespace BookStoreApp.Client.Infrastructure;
@@ -11,14 +10,14 @@ public static class ServiceCollectionExtensions
         var assembly = Assembly.GetExecutingAssembly();
 
         var serviceTypes = assembly.GetTypes()
-            .Where(t => 
-                typeof(IService).IsAssignableFrom(t) && 
+            .Where(t =>
+                typeof(Service).IsAssignableFrom(t) &&
                 t.IsClass && !t.IsAbstract);
 
         foreach (var implementationType in serviceTypes)
         {
             var interfaceType = implementationType.GetInterfaces()
-                .FirstOrDefault(i => i != typeof(IService) && typeof(IService).IsAssignableFrom(i));
+                .FirstOrDefault(i => i != typeof(Service) && typeof(Service).IsAssignableFrom(i));
 
             if (interfaceType != null)
             {
@@ -28,7 +27,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static void AddFluentValidators(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         List<string> assemblyNames)
     {
         var validators = assemblyNames.GetAssemblies();

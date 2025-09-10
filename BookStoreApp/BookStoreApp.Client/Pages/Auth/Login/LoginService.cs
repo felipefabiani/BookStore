@@ -12,7 +12,7 @@ public interface ILoginService : IService
     Task<Result<UserLoginResponse>> Login(UserLoginRequest userLogin);
 }
 
-public class LoginService(IHttpClientFactory httpClientFactory) : Service, ILoginService
+public sealed class LoginService(IHttpClientFactory httpClientFactory) : Service, ILoginService
 {
     // This class can be used to encapsulate any business logic related to the login process.
     // For example, you might want to add methods for validating user credentials,

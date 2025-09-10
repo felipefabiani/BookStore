@@ -1,9 +1,10 @@
 ﻿@page "/login"
 @using BookStore.Models
 @using BookStore.Models.Feature.Login
+@using BookStoreApp.Client.Authentication
 @using LanguageExt.Common
 
-@inject NavigationManager NavManager
+@inject IAuthenticationService AuthService
 
 <PageTitle>Login</PageTitle>
 
@@ -92,26 +93,26 @@
     private async Task ExecuteLogin(UserLoginResponse resp)
     {
 
-        // var result = await AuthService.Login(resp);
+        var result = await AuthService.Login(resp);
 
-        // if (result is not null)
-        // {
-        //     NavManager.NavigateTo(ReturnUrl);
-        // }
-        // else
-        // {
-        //     Snackbar.Add("There was an error when trying to log in", Severity.Error);
-        // }
+        if (result is not null)
+        {
+            NavManager.NavigateTo(ReturnUrl);
+        }
+        else
+        {
+            Snackbar.Add("There was an error when trying to log in", Severity.Error);
+        }
 
-        // if (resp.HasToken)
-        // {
-        //     loggedUser = resp;
-        //     Snackbar.Add($"User {resp.FullName} loged in");
-        // }
-        // else
-        // {
-        //     Snackbar.Add($"Oppppss!!!");
-        // }
+        if (resp.HasToken)
+        {
+            loggedUser = resp;
+            Snackbar.Add($"User {resp.FullName} loged in");
+        }
+        else
+        {
+            Snackbar.Add($"Oppppss!!!");
+        }
 
         await Task.CompletedTask;
     }

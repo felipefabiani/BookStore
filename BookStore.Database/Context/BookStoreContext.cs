@@ -1,6 +1,6 @@
 ﻿using BookStore.Helper;
-using BookStore.Helper.Extensions;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 
 namespace BookStore.Database.Context;
@@ -39,7 +39,7 @@ public class BookStoreContextFactory : IDesignTimeDbContextFactory<BookStoreCont
     }
 }
 
-public class BookStoreContext(DbContextOptions<BookStoreContext> options) : BookStoreAbstractContext(options)
+public sealed class BookStoreContext(DbContextOptions<BookStoreContext> options) : BookStoreAbstractContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,7 +50,7 @@ public class BookStoreContext(DbContextOptions<BookStoreContext> options) : Book
             new() { Id = 2, Name = "Author" },
             new() { Id = 3, Name = "User" }
         ]);
-        
+
         modelBuilder.Entity<Claim>().HasData([
             new() { Id = 1, Name = "BookStore_Moderate", Value = "100" },
             new() { Id = 2, Name = "BookStore_Delete", Value = "101" },
@@ -65,7 +65,7 @@ public class BookStoreContext(DbContextOptions<BookStoreContext> options) : Book
     }
 }
 
-public class BookStoreReadOnlyContext : BookStoreAbstractContext
+public sealed class BookStoreReadOnlyContext: BookStoreAbstractContext
 {
     public BookStoreReadOnlyContext(DbContextOptions<BookStoreReadOnlyContext> options)
         : base(options)

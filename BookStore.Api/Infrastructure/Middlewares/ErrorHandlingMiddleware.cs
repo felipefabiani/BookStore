@@ -31,18 +31,18 @@ public class ErrorHandlingMiddleware
                     context.Response.StatusCode == 401 ? "User Unauthorized" : "Access denied");
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            await SetResponse(context, "Unknow error.");
+            await SetResponse(context, ex.Message, 400);
         }
     }
 
-    private static async Task SetResponse([Required]HttpContext context, string msg)
+    private static async Task SetResponse([Required]HttpContext context, string msg, int? statusCode = null)
     {
         ArgumentNullException.ThrowIfNull(msg);
         var error = new ErrorRequest
         {
-            StatusCode = context.Response.StatusCode,
+            StatusCode = statusCode ?? context.Response.StatusCode,
             Message = msg 
         };
 

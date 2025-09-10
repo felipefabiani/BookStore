@@ -5,7 +5,7 @@ public interface IService
     void CancelCall();
 }
 
-public class Service : IService
+public abstract class Service : IService
 {
     protected CancellationTokenSource CancTokenSource { get; set; } = new CancellationTokenSource();
     public void CancelCall()

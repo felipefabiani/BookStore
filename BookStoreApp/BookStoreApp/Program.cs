@@ -1,8 +1,12 @@
+using Blazored.LocalStorage;
 using BookStore.Helper;
+using BookStore.Helper.Auth;
 using BookStore.Models.Auth;
+using BookStoreApp.Client.Authentication;
 using BookStoreApp.Client.Infrastructure;
 using BookStoreApp.Client.Pages.Auth.Login;
 using BookStoreApp.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +16,12 @@ builder.Services.AddMudServices();
 
 builder.Services.AddFluentValidators([new JwtToken().GetType().Assembly.GetName().Name]);
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddBookStoreAuthorization();
+builder.Services.AddScoped<IAuthStateProvider, AuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(p => (AuthStateProvider)p.GetRequiredService<IAuthStateProvider>());
+builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddBlazoredLocalStorage();
+
 builder.Services.AddHttpClient(BookStoreConstants.Services.BookStoreApiName, (provider, client) =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
@@ -20,7 +30,6 @@ builder.Services.AddHttpClient(BookStoreConstants.Services.BookStoreApiName, (pr
     client.BaseAddress = new Uri($"{apiUri}/api/v1/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()

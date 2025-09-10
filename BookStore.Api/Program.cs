@@ -1,9 +1,13 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using BookStore.Api.Endpoints.Login.Commands.LoginCmd;
 using BookStore.Api.Infrastructure;
 using BookStore.Api.Infrastructure.Auth;
 using BookStore.Api.Infrastructure.Middlewares;
+using BookStore.Database.Context;
+using BookStore.Database.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
@@ -14,7 +18,7 @@ namespace BookStore.Api;
 
 public partial class Program
 {
-    public static void Main()
+    public static async Task Main()
     {
         try
         {
@@ -25,7 +29,7 @@ public partial class Program
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             builder.Services.AddSingleton<ITokenProvider, TokenProvider>();
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
+            builder.Services.AddScoped<ILoginService, LoginService>();
             Log.Information("Starting up the Minimal API application");
 
             builder.AddDatabase();
@@ -120,11 +124,11 @@ public partial class Program
                         });
                 });
 
-                //Log.Information("Migration and Seed - {Environment}", SeedEnvironmentEnum.Dev);
-                //var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
-                //using var context = factory.CreateDbContext();
-                //await context.Seed(SeedEnvironmentEnum.Dev);
-                //Log.Information("Migration and Seed - done");
+                Log.Information("Migration and Seed - {Environment}", SeedEnvironmentEnum.Dev);
+                var factory = app.Services.GetRequiredService<IDbContextFactory<BookStoreContext>>();
+                using var context = factory.CreateDbContext();
+                await context.Seed(SeedEnvironmentEnum.Dev);
+                Log.Information("Migration and Seed - done");
             }
 
             app.UseCors("AllowFrontend");
