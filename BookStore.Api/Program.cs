@@ -6,12 +6,13 @@ using BookStore.Api.Infrastructure.Auth;
 using BookStore.Api.Infrastructure.Middlewares;
 using BookStore.Database.Context;
 using BookStore.Database.Infrastructure;
+using BookStore.Models.Feature.Login;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
-using System.Reflection;
 using System.Text;
 
 namespace BookStore.Api;
@@ -31,7 +32,7 @@ public partial class Program
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.AddScoped<ILoginService, LoginService>();
             Log.Information("Starting up the Minimal API application");
-
+            builder.Services.AddValidatorsFromAssemblyContaining<UserLoginRequestValidator>();
             builder.AddDatabase();
             builder.Services.AddOpenApi();
             builder.Services.AddOpenApi("v2");

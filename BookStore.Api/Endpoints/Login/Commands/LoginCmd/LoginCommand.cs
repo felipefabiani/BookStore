@@ -1,4 +1,5 @@
-﻿using BookStore.Models.Feature.Login;
+﻿using BookStore.Api.Infrastructure.Filters;
+using BookStore.Models.Feature.Login;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Api.Endpoints.Login.Commands.LoginCmd;
@@ -17,8 +18,9 @@ public sealed class LoginCommandEndpoint(IEndpointRouteBuilder app) :
             {
                 return Results.Ok(response);
             }
-            return Results.BadRequest(new Exception("User or password incorrect!"));
+            return Results.BadRequest("User or password incorrect!");
         })
+            .AddValidationFilter<UserLoginRequest>()
             .WithName("LoginV1")
             .MapToApiVersion(1);
 

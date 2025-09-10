@@ -24,6 +24,5 @@ public static class ResultExtention
 
         var bad = await value.Content.ReadFromJsonAsync<ErrorRequest>();
         return new Result<TValue, ErrorRequest>(bad!);
-
     }
 }

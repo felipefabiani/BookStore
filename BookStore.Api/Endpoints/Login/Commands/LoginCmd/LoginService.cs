@@ -47,8 +47,7 @@ public class LoginService : ILoginService, IScopedService, IAsyncDisposable, IDi
             .Include(x => x.Claims)
             .FirstOrDefaultAsync(cancellationToken) ?? new User();
 
-        if (
-            string.IsNullOrWhiteSpace(user.Password) ||
+        if (string.IsNullOrWhiteSpace(user.Password) ||
             !EnhancedVerify(request.Password, user.Password))
         {
             return NullUserLoginResponse.Empty;
