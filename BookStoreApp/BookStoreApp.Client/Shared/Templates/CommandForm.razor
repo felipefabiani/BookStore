@@ -1,5 +1,5 @@
-﻿
-@inherits FormTemplateBase<TRequest, TResponse>
+﻿@inherits FormTemplateServiceBase<TService, TRequest, TResponse>
+@typeparam TService where TService : IService
 @typeparam TRequest where TRequest : class, new ()
 @typeparam TResponse where TResponse : notnull, new ()
 

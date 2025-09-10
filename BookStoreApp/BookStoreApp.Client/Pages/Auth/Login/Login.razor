@@ -4,7 +4,6 @@
 @using LanguageExt.Common
 
 @inject NavigationManager NavManager
-@inject ILoginService Service
 
 <PageTitle>Login</PageTitle>
 
@@ -12,14 +11,15 @@
     <MudItem md="6" xs="12">
        <CommandForm 
            @ref=commandFormRef
-            TRequest=UserLoginRequest
-            TResponse=UserLoginResponse
-            DefaultModel=@(new UserLoginRequest {Email="admin.test@article.ie", Password="123456"})
-            SuccessCallBack=@(async user => await ExecuteLogin(user))
-            FailCallBack=@(err => LoginFail(err))
-            ButtonSubmitText="Login"
-            SuccessMessage="Login successful"
-            ResetCallBack=ResetShowFailMessage
+           TService="ILoginService"
+           TRequest=UserLoginRequest
+           TResponse=UserLoginResponse
+           DefaultModel=@(new UserLoginRequest {Email="admin.test@article.ie", Password="123456"})
+           SuccessCallBack=@(async user => await ExecuteLogin(user))
+           FailCallBack=@(err => LoginFail(err))
+           ButtonSubmitText="Login"
+           SuccessMessage="Login successful"
+           ResetCallBack=ResetShowFailMessage
         >
             <HeaderTemplate>
                 <MudElement HtmlTag="h1">Login</MudElement>
@@ -59,7 +59,7 @@
         set => _returnUrl = value;
     }
 
-    private CommandForm<UserLoginRequest, UserLoginResponse> commandFormRef = default!;
+    private CommandForm<ILoginService, UserLoginRequest, UserLoginResponse> commandFormRef = default!;
 
     private string _returnUrl = string.Empty;
     private UserLoginResponse? loggedUser;
@@ -72,7 +72,7 @@
         {            
             commandFormRef.SendMessage = async () =>
             {
-                return await Service.Login(commandFormRef.Model!);
+                return await commandFormRef.Service.Login(commandFormRef.Model!);
             };
         }
         base.OnAfterRender(firstRender);

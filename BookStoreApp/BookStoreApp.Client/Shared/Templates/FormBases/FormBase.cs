@@ -136,7 +136,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
             return await DialogService.ShowAsync<CancelDialog>("",
                 new DialogParameters
                 {
-                    {"cancellationTokenSource", cancellationTokenSource }
+                    {"CancelRequest", () => ResetCancelationToken() }
                 },
                 new DialogOptions
                 {
@@ -166,7 +166,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         }
         await Task.CompletedTask;
     }
-    private void ResetCancelationToken()
+    protected virtual void ResetCancelationToken()
     {
         cancellationTokenSource.Cancel();
         cancellationTokenSource.Dispose();

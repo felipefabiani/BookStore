@@ -1,19 +1,23 @@
 ﻿<MudDialog>
+    <TitleContent>
+        Cancel request!
+    </TitleContent>
     <DialogContent>
-        Cancel request?
+        Request is taking too long to process. Do you want to cancel it?
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="Submit">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Yes</MudButton>
     </DialogActions>
 </MudDialog>
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter] public Color Color { get; set; }
-    [Parameter] public CancellationTokenSource cancellationTokenSource { get; set; } = null!;
+    [Parameter] public Action CancelRequest { get; set; } = default!;
 
-    void Submit() {
-        cancellationTokenSource.Cancel();
+    void Submit()
+    {
+        CancelRequest?.Invoke();
         MudDialog.Close(DialogResult.Ok(true));
     }
 }
