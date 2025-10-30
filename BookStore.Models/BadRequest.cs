@@ -1,21 +1,36 @@
-﻿using LanguageExt.Common;
-using System.Net;
-
+﻿
 namespace BookStore.Models;
 
-//public string? Message { get; set; }
-public record BadRequest(List<string>? Errors) : Error
-{
-    public int StatusCode { get; set; } = 400;
+//public class ApiError
+//{
+//    public int StatusCode { get; set; } = 400;
+//    public string Message { get; set; } = "Something went wrong.";
+//    public List<string>? Details { get; set; }
+//}
 
-    public override string Message => throw new NotImplementedException();
+//public class FinResult<T>
+//{
+//    public Fin<T> Result { get; set; } = Fin<T>.Fail("Uninitialized");
+//    public ApiError? ErrorDetails { get; set; }
+//}
+//public static class FinExtensions
+//{
+//    public static async Task<FinResult<T>> ToFinResultAsync<T>(this HttpResponseMessage response)
+//    {
+//        if (response.IsSuccessStatusCode)
+//        {
+//            var data = await response.Content.ReadFromJsonAsync<T>();
+//            return new FinResult<T>
+//            {
+//                Result = Fin<T>.Succ(data!)
+//            };
+//        }
 
-    public override bool IsExceptional => throw new NotImplementedException();
-
-    public override bool IsExpected => throw new NotImplementedException();
-
-    public override ErrorException ToErrorException()
-    {
-        throw new NotImplementedException();
-    }
-}
+//        var error = await response.Content.ReadFromJsonAsync<ApiError>();
+//        return new FinResult<T>
+//        {
+//            Result = Fin<T>.Fail(error?.Message ?? "Unknown error"),
+//            ErrorDetails = error
+//        };
+//    }
+//}

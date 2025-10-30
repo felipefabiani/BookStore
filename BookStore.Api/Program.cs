@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using BookStore.Api.Endpoints.Login.Commands.LoginCmd;
+using Asp.Versioning.Builder;
 using BookStore.Api.Infrastructure;
 using BookStore.Api.Infrastructure.Auth;
 using BookStore.Api.Infrastructure.Middlewares;
@@ -8,6 +9,8 @@ using BookStore.Database.Context;
 using BookStore.Database.Infrastructure;
 using BookStore.Models.Feature.Login;
 using FluentValidation;
+using BookStore.Api.Infrastructure.Middlewares;
+using BookStore.Models.Feature.Login;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

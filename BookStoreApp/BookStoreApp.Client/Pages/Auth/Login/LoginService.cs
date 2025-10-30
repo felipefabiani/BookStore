@@ -18,10 +18,11 @@ public sealed class LoginService(IHttpClientFactory httpClientFactory) : Service
     // For example, you might want to add methods for validating user credentials,
     // logging login attempts, or interacting with a user database.
     private HttpClient _httpClient = httpClientFactory.CreateClient(BookStoreConstants.Services.BookStoreApiName);
+    public CancellationTokenSource CancellationTokenSource { get; set; }
 
     public async Task<Result<UserLoginResponse>> Login(UserLoginRequest userLogin)
     {
-        var ret = await _httpClient.PostAsJsonAsync("login", userLogin, CancTokenSource.Token);
+        var ret = await _httpClient.PostAsJsonAsync("login", userLogin, CancellationTokenSource.Token);
 
         var result = await ret.ToResult<UserLoginResponse>();
         return result;

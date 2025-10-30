@@ -42,4 +42,8 @@ builder.AddProject<Projects.BookStoreApp>("bookstoreapp")
     .WithReference(api)
     .WaitFor(api);
 
+builder.AddProject<Projects.BookStoreApp_Client>("bookstoreapp-client")
+    .WithReference(api)
+    .WaitFor(api);
+
 builder.Build().Run();

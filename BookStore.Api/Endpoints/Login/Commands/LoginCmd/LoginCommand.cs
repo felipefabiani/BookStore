@@ -6,7 +6,6 @@ namespace BookStore.Api.Endpoints.Login.Commands.LoginCmd;
 
 public sealed class LoginCommandEndpoint(IEndpointRouteBuilder app) :
     LoginRouteGroup(app)
-    
 {
     public override void MapEndpopint()
     {
@@ -28,10 +27,12 @@ public sealed class LoginCommandEndpoint(IEndpointRouteBuilder app) :
         {
             await Task.Delay(1000, c);
 
-            var urlLoginV1 = linkGenerator.GetPathByName("LoginV1", values: null);
-
-
-            return Results.Ok(urlLoginV1);
+            return Results.Ok(new UserLoginResponse
+            {
+                FullName = "Test User",
+                UserClaims = new List<string> { "Admin", "User" },
+                UserRoles = new List<string> { "Admin", "User" },
+            });
         })
             .WithName("LoginV2")
             .MapToApiVersion(2);

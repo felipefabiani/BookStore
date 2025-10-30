@@ -1,5 +1,4 @@
-﻿using BookStore.Models;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace BookStoreApp.Client.Shared.Templates.FormBases;
 public abstract class FormTemplateBase<TRequest, TResponse> : FormBase<TRequest, TResponse>
@@ -10,21 +9,7 @@ public abstract class FormTemplateBase<TRequest, TResponse> : FormBase<TRequest,
     [Parameter] public RenderFragment HeaderTemplate { get; set; } = default!;
     [Parameter] public RenderFragment<TRequest> FormTemplate { get; set; } = default!;
     [Parameter] public RenderFragment ButtonsTemplate { get; set; } = default!;
-
-    [Parameter] public Action? ResetCallBack { get; set; }
-
-    protected override async Task Fail(ErrorRequest err)
-    {
-        ShowFailMessage(err.Message);
-        FailCallBack?.Invoke(err);
-        await Task.CompletedTask;
-    }
-
-    protected override async Task Success(TResponse response)
-    {
-        await base.Success(response);
-        SuccessCallBack?.Invoke(response);
-    }
+    [Parameter] public Action? ResetCallBack { get; set; } = null;
 
     protected override async Task Reset()
     {

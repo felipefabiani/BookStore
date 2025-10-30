@@ -6,7 +6,7 @@ public abstract class LoginRouteGroup : EndpointGroupBase
         : base(app)
     {
         RouteGroup = RouteGroup
-            .MapGroup("login")
-            .AllowAnonymous();
+            .MapGroup("login");
+            //.AllowAnonymous();
     }
 }

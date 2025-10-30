@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using BookStore.Helper;
 using BookStore.Models.Feature.Login;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
@@ -26,10 +27,12 @@ public class AuthStateProvider : AuthenticationStateProvider, IAuthStateProvider
     public int UserId { get => _userId; }
 
     public AuthStateProvider(
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         ILocalStorageService localStorage)
     {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _httpClient = httpClientFactory?
+            .CreateClient(BookStoreConstants.Services.BookStoreApiName) 
+            ?? throw new ArgumentNullException(nameof(httpClientFactory));
         _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
     }
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()

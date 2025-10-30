@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-@inject IAuthenticationService AuthService
+@* @inject IAuthenticationService AuthService *@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -24,7 +24,8 @@
 
     private async Task BeginSignOut(MouseEventArgs args)
     {
-        await AuthService.Logout();
+        // await AuthService.Logout();
         Navigation.NavigateTo("/login");
+        await Task.CompletedTask;
     }
 }

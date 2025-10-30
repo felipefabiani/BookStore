@@ -1,43 +1,36 @@
 ﻿using BookStore.Models;
-using LanguageExt;
-using LanguageExt.Common;
+using BookStoreApp.Client.Shared;
+using BookStoreApp.Client.Shared.Templates.FormBases;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using FV = FluentValidation;
 
-
-namespace BookStoreApp.Client.Shared.Templates.FormBases;
-public abstract class FormBase<TRequest, TResponse> : ComponentBase
+namespace BookStoreApp.Components.FormBases;
+public abstract class FormBase<TService, TRequest, TResponse> : ComponentBase
+    where TService : IService
     where TRequest : class, new()
     where TResponse : notnull, new()
 {
     [Inject] protected IDialogService DialogService { get; set; } = default!;
     [Inject] protected ISnackbar SnackbarFormBase { get; set; } = default!;
-    [Inject] protected FV.AbstractValidator<TRequest>? Validator { get; set; }
+    [Inject] protected TService Service { get; set; } = default!;
 
-    [Parameter] public Action<TResponse> SuccessCallBack { get; set; } = default!;
+    [Parameter] public Action<Result<TResponse>> SuccessCallBack { get; set; } = default!;
     [Parameter] public Action<ErrorRequest> FailCallBack { get; set; } = default!;
 
+
+    // [Parameter] public string HttpClientName { get; set; } = default!;
+    // [Parameter] public string Endpoint { get; set; } = default!;
     [Parameter] public string? SuccessMessage { get; set; } = null;
     [Parameter] public string? FailedMessage { get; set; } = null;
     [Parameter] public bool DisableSuccessDefaultMessage { get; set; } = false;
     [Parameter] public bool DisableFailDefaultMessage { get; set; } = false;
     [Parameter] public string? ButtonSubmitText { get; set; } = null;
 
-    public TRequest Model
-    {
-        get => _model;
-        set
-        {
-            _model = value;
-            StateHasChanged();
-        }
-    }
 
-    private TRequest _model = new();
+    protected TRequest _model = new();
     protected Result<TResponse> _response = default!;
 
-    public CancellationTokenSource CancellationTokenSource { get; set; } = new();
+    protected CancellationTokenSource cancellationTokenSource = new();
 
     protected MudForm? form;
 
@@ -54,16 +47,20 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
 
         try
         {
-            _response = await SendMessage.Invoke();
-            await _response.Match(
-                success: async succ =>
+            _response = await SendMessage();
+            await _response.MatchAsync<Result<TResponse>>(
+                success: async succ=>
                 {
                     await Reset();
-                    await Success(succ);
+                    await Success();
+                    SuccessCallBack?.Invoke(succ);
+                    return succ;
                 },
                 failure: async fail =>
                 {
-                    await Fail(fail);
+                    await Fail();
+                    FailCallBack?.Invoke(fail);
+                    return default;
                 });
         }
         catch (TaskCanceledException ex) when (ex.CancellationToken.IsCancellationRequested)
@@ -85,22 +82,21 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         }
     }
 
-    public required Func<Task<Result<TResponse>>> SendMessage;
+    protected abstract Task<Result<TResponse>> SendMessage();
 
-    protected virtual async Task Fail(ErrorRequest bad)
+    protected virtual async Task Fail()
     {
-        ShowFailMessage(bad);
-        FailCallBack?.Invoke(bad);
+        //var bad = await response.Content.ReadFromJsonAsync<BadRequestResponse>();
+        //ShowFailMessage(bad);
         await Task.CompletedTask;
     }
-    protected virtual async Task Success(TResponse response)
+    protected virtual Task Success()
     {
         ShowSuccesMessage();
-        SuccessCallBack?.Invoke(response);
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    protected void ShowFailMessage(ErrorRequest badRequest)
+    protected void ShowFailMessage(string? msg = null)
     {
         if (FailedMessage is not null)
         {
@@ -111,7 +107,7 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         else if (DisableFailDefaultMessage == false)
         {
             SnackbarFormBase.Add(
-                message: badRequest.Message ?? "msg",
+                message: msg ?? "msg",
                 severity: Severity.Error);
         }
     }
@@ -136,19 +132,16 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
     {
         try
         {
-            await Task.Delay(1_000, CancellationTokenSource.Token);
-            return await DialogService.ShowAsync<CancelDialog>("",
+            await Task.Delay(1_000, cancellationTokenSource.Token);
+            return await DialogService.ShowAsync<CancelDialog>("Cancel request!",
                 new DialogParameters
                 {
-                    {"CancelRequest", () => ResetCancelationToken() }
+                    {"cancellationTokenSource", cancellationTokenSource }
                 },
                 new DialogOptions
                 {
-                    CloseOnEscapeKey = false,
-                    // DisableBackdropClick = true,
-                    CloseButton = false,
-                    NoHeader = true,
-
+                    FullScreen = true,
+                    BackdropClick = false
                 });
         }
         catch (TaskCanceledException)
@@ -157,10 +150,10 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         }
     }
 
-    protected virtual async Task Cancel()
+    protected virtual Task Cancel()
     {
         ResetCancelationToken();
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
     protected virtual async Task Reset()
     {
@@ -168,30 +161,14 @@ public abstract class FormBase<TRequest, TResponse> : ComponentBase
         {
             await form.ResetAsync();
         }
-        ResetCancelationToken();
         await Task.CompletedTask;
     }
-    protected virtual void ResetCancelationToken()
+    private void ResetCancelationToken()
     {
-        CancellationTokenSource.Cancel();
-        CancellationTokenSource.Dispose();
-        CancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+        cancellationTokenSource = new CancellationTokenSource();
     }
-
-    public Func<object, string, IEnumerable<string>> ValidateValue => (mod, propertyName) =>
-    {
-        if (Validator is null)
-        {
-            return [];
-        }
-        var result = Validator.Validate(
-            FV.ValidationContext<TRequest>
-                .CreateWithOptions((TRequest)mod, x => x.IncludeProperties(propertyName)));
-        return
-            result.IsValid
-            ? []
-            : result.Errors.Select(e => e.ErrorMessage);
-    };
 
     //protected override async Task OnInitializedAsync()
     //{
